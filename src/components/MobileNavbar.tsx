@@ -28,27 +28,29 @@ export function MobileNavbar() {
       <nav className="flex h-16">
         {navItems.map((item) => {
           const isActive =
-            item.path === "/"
-              ? location.pathname === "/"
-              : location.pathname.startsWith(item.path);
+            item.path === "/" ? location.pathname === "/" : location.pathname.startsWith(item.path);
 
           return (
             <Link
               key={item.path}
               to={item.path}
-              className="flex-1 flex flex-col items-center justify-center"
+              className="flex flex-1 flex-col items-center justify-center"
             >
-              <div className={cn(
-                "flex flex-col items-center justify-center space-y-1 relative",
-                isActive ? "text-primary" : "text-muted-foreground hover:text-primary"
-              )}>
-                <item.icon className={cn(
-                  "h-5 w-5 transition-transform duration-300",
-                  isActive ? "scale-110" : ""
-                )} />
+              <div
+                className={cn(
+                  "relative flex flex-col items-center justify-center space-y-1",
+                  isActive ? "text-primary" : "text-muted-foreground hover:text-primary",
+                )}
+              >
+                <item.icon
+                  className={cn(
+                    "h-5 w-5 transition-transform duration-300",
+                    isActive ? "scale-110" : "",
+                  )}
+                />
                 <span className="text-xs">{item.label}</span>
                 {isActive && (
-                  <span className="absolute -bottom-4 w-8 h-1 bg-primary rounded-full" />
+                  <span className="absolute -bottom-4 h-1 w-8 rounded-full bg-primary" />
                 )}
               </div>
             </Link>
@@ -58,23 +60,29 @@ export function MobileNavbar() {
         {/* Search Button with Dialog */}
         <Dialog open={isSearchOpen} onOpenChange={setIsSearchOpen}>
           <DialogTrigger asChild>
-            <button className="flex-1 flex flex-col items-center justify-center">
-              <div className={cn(
-                "flex flex-col items-center justify-center space-y-1 relative",
-                location.pathname === "/search" ? "text-primary" : "text-muted-foreground hover:text-primary"
-              )}>
-                <Search className={cn(
-                  "h-5 w-5 transition-transform duration-300",
-                  location.pathname === "/search" ? "scale-110" : ""
-                )} />
+            <button className="flex flex-1 flex-col items-center justify-center">
+              <div
+                className={cn(
+                  "relative flex flex-col items-center justify-center space-y-1",
+                  location.pathname === "/search"
+                    ? "text-primary"
+                    : "text-muted-foreground hover:text-primary",
+                )}
+              >
+                <Search
+                  className={cn(
+                    "h-5 w-5 transition-transform duration-300",
+                    location.pathname === "/search" ? "scale-110" : "",
+                  )}
+                />
                 <span className="text-xs">Tìm kiếm</span>
                 {location.pathname === "/search" && (
-                  <span className="absolute -bottom-4 w-8 h-1 bg-primary rounded-full" />
+                  <span className="absolute -bottom-4 h-1 w-8 rounded-full bg-primary" />
                 )}
               </div>
             </button>
           </DialogTrigger>
-          <DialogContent className="max-w-xl max-h-[90vh] overflow-hidden p-4">
+          <DialogContent className="max-h-[90vh] max-w-xl overflow-hidden p-4">
             <DialogTitle className="sr-only">Tìm kiếm</DialogTitle>
             <Search3D
               autoFocus

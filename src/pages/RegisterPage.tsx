@@ -3,7 +3,14 @@ import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff, UserPlus, Mail, Lock, User, Facebook, Twitter } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 
@@ -52,19 +59,17 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="container mx-auto flex flex-col items-center justify-center py-10 px-4">
+    <div className="container mx-auto flex flex-col items-center justify-center px-4 py-10">
       <div className="w-full max-w-md">
         <Card className="border-none shadow-lg">
           <CardHeader className="space-y-1 text-center">
             <CardTitle className="text-2xl font-bold">Tạo tài khoản</CardTitle>
-            <CardDescription>
-              Đăng ký để truy cập vào nội dung độc quyền
-            </CardDescription>
+            <CardDescription>Đăng ký để truy cập vào nội dung độc quyền</CardDescription>
           </CardHeader>
 
           <CardContent className="space-y-4">
             {error && (
-              <div className="p-3 rounded-md bg-destructive/15 text-destructive text-sm mb-4">
+              <div className="mb-4 rounded-md bg-destructive/15 p-3 text-sm text-destructive">
                 {error}
               </div>
             )}
@@ -117,11 +122,7 @@ export default function RegisterPage() {
                     onClick={() => setShowPassword(!showPassword)}
                     className="absolute right-3 top-3 text-muted-foreground hover:text-foreground"
                   >
-                    {showPassword ? (
-                      <EyeOff className="h-4 w-4" />
-                    ) : (
-                      <Eye className="h-4 w-4" />
-                    )}
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>
               </div>
@@ -169,14 +170,10 @@ export default function RegisterPage() {
                 </label>
               </div>
 
-              <Button
-                type="submit"
-                className="w-full"
-                disabled={isLoading}
-              >
+              <Button type="submit" className="w-full" disabled={isLoading}>
                 {isLoading ? (
                   <span className="flex items-center gap-1">
-                    <span className="h-4 w-4 rounded-full border-2 border-current border-r-transparent animate-spin" />
+                    <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-r-transparent" />
                     Đang đăng ký...
                   </span>
                 ) : (
@@ -193,9 +190,7 @@ export default function RegisterPage() {
                 <span className="w-full border-t" />
               </div>
               <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-background px-2 text-muted-foreground">
-                  Hoặc đăng ký với
-                </span>
+                <span className="bg-background px-2 text-muted-foreground">Hoặc đăng ký với</span>
               </div>
             </div>
 
@@ -214,7 +209,7 @@ export default function RegisterPage() {
           <CardFooter className="flex justify-center">
             <p className="text-sm text-muted-foreground">
               Đã có tài khoản?{" "}
-              <Link to="/login" className="text-primary font-medium hover:underline">
+              <Link to="/login" className="font-medium text-primary hover:underline">
                 Đăng nhập
               </Link>
             </p>

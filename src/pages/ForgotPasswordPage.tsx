@@ -3,7 +3,14 @@ import { Link } from "react-router-dom";
 import { Mail, ArrowLeft, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 
 export default function ForgotPasswordPage() {
@@ -32,7 +39,7 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <div className="container mx-auto flex flex-col items-center justify-center min-h-[80vh] py-10 px-4">
+    <div className="container mx-auto flex min-h-[80vh] flex-col items-center justify-center px-4 py-10">
       <div className="w-full max-w-md">
         <Card className="border-none shadow-lg">
           <CardHeader className="space-y-1 text-center">
@@ -44,14 +51,14 @@ export default function ForgotPasswordPage() {
 
           <CardContent className="space-y-4">
             {error && (
-              <div className="p-3 rounded-md bg-destructive/15 text-destructive text-sm mb-4">
+              <div className="mb-4 rounded-md bg-destructive/15 p-3 text-sm text-destructive">
                 {error}
               </div>
             )}
 
             {success ? (
-              <div className="p-4 rounded-md bg-green-100 text-green-800 text-sm mb-4">
-                <h3 className="font-medium text-base mb-1">Yêu cầu đã được gửi!</h3>
+              <div className="mb-4 rounded-md bg-green-100 p-4 text-sm text-green-800">
+                <h3 className="mb-1 text-base font-medium">Yêu cầu đã được gửi!</h3>
                 <p>
                   Chúng tôi đã gửi email hướng dẫn đặt lại mật khẩu đến <strong>{email}</strong>.
                   Vui lòng kiểm tra hộp thư của bạn và làm theo hướng dẫn.
@@ -75,14 +82,10 @@ export default function ForgotPasswordPage() {
                   </div>
                 </div>
 
-                <Button
-                  type="submit"
-                  className="w-full"
-                  disabled={isLoading}
-                >
+                <Button type="submit" className="w-full" disabled={isLoading}>
                   {isLoading ? (
                     <span className="flex items-center gap-1">
-                      <span className="h-4 w-4 rounded-full border-2 border-current border-r-transparent animate-spin" />
+                      <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-r-transparent" />
                       Đang gửi...
                     </span>
                   ) : (
@@ -100,7 +103,7 @@ export default function ForgotPasswordPage() {
             <div className="flex flex-col items-center gap-2">
               <Link
                 to="/login"
-                className="flex items-center gap-1 text-primary font-medium hover:underline"
+                className="flex items-center gap-1 font-medium text-primary hover:underline"
               >
                 <ArrowLeft className="h-4 w-4" />
                 Quay lại đăng nhập

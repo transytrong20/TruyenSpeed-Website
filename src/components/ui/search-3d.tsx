@@ -51,13 +51,15 @@ export function Search3D({
 
     // Simulate search with delay for animation effect
     setTimeout(() => {
-      const results = allManga.filter(
-        (manga) =>
-          manga.title.toLowerCase().includes(value.toLowerCase()) ||
-          manga.description.toLowerCase().includes(value.toLowerCase()) ||
-          manga.author.toLowerCase().includes(value.toLowerCase()) ||
-          manga.genres.some((genre) => genre.toLowerCase().includes(value.toLowerCase()))
-      ).slice(0, 20); // Limit to 20 results
+      const results = allManga
+        .filter(
+          (manga) =>
+            manga.title.toLowerCase().includes(value.toLowerCase()) ||
+            manga.description.toLowerCase().includes(value.toLowerCase()) ||
+            manga.author.toLowerCase().includes(value.toLowerCase()) ||
+            manga.genres.some((genre) => genre.toLowerCase().includes(value.toLowerCase())),
+        )
+        .slice(0, 20); // Limit to 20 results
 
       setSearchResults(results);
       setIsSearching(false);
@@ -103,9 +105,7 @@ export function Search3D({
           (manga) =>
             manga.title.toLowerCase().includes(value.toLowerCase()) ||
             manga.author.toLowerCase().includes(value.toLowerCase()) ||
-            manga.genres.some((genre) =>
-              genre.toLowerCase().includes(value.toLowerCase())
-            )
+            manga.genres.some((genre) => genre.toLowerCase().includes(value.toLowerCase())),
         )
         .slice(0, maxResults); // Limit to maxResults
 
@@ -129,9 +129,9 @@ export function Search3D({
     <div
       ref={containerRef}
       className={cn(
-        "relative w-full max-w-3xl perspective-1000",
-        showOnMobile ? "" : "md:block hidden",
-        className
+        "perspective-1000 relative w-full max-w-3xl",
+        showOnMobile ? "" : "hidden md:block",
+        className,
       )}
     >
       <form
@@ -140,9 +140,9 @@ export function Search3D({
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
       >
-        <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-secondary/20 rounded-xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-primary/20 to-secondary/20 opacity-0 blur-xl transition-opacity duration-300 group-hover:opacity-100" />
 
-        <div className="relative flex items-center backdrop-blur-sm border border-input bg-background/80 rounded-xl shadow-lg overflow-hidden">
+        <div className="relative flex items-center overflow-hidden rounded-xl border border-input bg-background/80 shadow-lg backdrop-blur-sm">
           <input
             ref={inputRef}
             type="text"
@@ -151,22 +151,24 @@ export function Search3D({
             onFocus={() => setIsFocused(true)}
             onBlur={() => setIsFocused(false)}
             placeholder={placeholder}
-            className="flex-1 py-2.5 px-4 w-full bg-transparent focus:outline-none text-base placeholder:text-muted-foreground"
+            className="w-full flex-1 bg-transparent px-4 py-2.5 text-base placeholder:text-muted-foreground focus:outline-none"
             autoComplete="off"
           />
 
           <button
             type="submit"
             className={cn(
-              "flex items-center justify-center p-3 text-muted-foreground hover:text-primary transition-colors",
-              query.trim() ? "text-primary" : ""
+              "flex items-center justify-center p-3 text-muted-foreground transition-colors hover:text-primary",
+              query.trim() ? "text-primary" : "",
             )}
           >
-            <SearchIcon className={cn(
-              "h-5 w-5 transition-transform duration-300",
-              isFocused ? "scale-110" : "",
-              query.trim() ? "text-primary" : ""
-            )} />
+            <SearchIcon
+              className={cn(
+                "h-5 w-5 transition-transform duration-300",
+                isFocused ? "scale-110" : "",
+                query.trim() ? "text-primary" : "",
+              )}
+            />
           </button>
         </div>
       </form>
@@ -175,28 +177,26 @@ export function Search3D({
       {suggestions.length > 0 && (
         <div
           ref={suggestionsRef}
-          className="absolute z-50 w-full mt-2 bg-background/95 backdrop-blur-sm border border-input rounded-xl shadow-lg overflow-hidden animate-in fade-in-50 duration-300"
+          className="absolute z-50 mt-2 w-full overflow-hidden rounded-xl border border-input bg-background/95 shadow-lg backdrop-blur-sm duration-300 animate-in fade-in-50"
         >
           <div className="p-2">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
               {suggestions.map((manga) => (
                 <div
                   key={manga.id}
-                  className="flex items-center gap-3 p-2 hover:bg-primary/10 cursor-pointer transition-colors rounded-lg"
+                  className="flex cursor-pointer items-center gap-3 rounded-lg p-2 transition-colors hover:bg-primary/10"
                   onClick={() => handleSuggestionClick(manga)}
                 >
                   <img
                     src={manga.coverImage}
                     alt={manga.title}
-                    className="w-10 h-14 object-cover rounded-md"
+                    className="h-14 w-10 rounded-md object-cover"
                   />
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-medium truncate text-sm">{manga.title}</h3>
-                    <p className="text-xs text-muted-foreground truncate">
-                      {manga.author}
-                    </p>
+                  <div className="min-w-0 flex-1">
+                    <h3 className="truncate text-sm font-medium">{manga.title}</h3>
+                    <p className="truncate text-xs text-muted-foreground">{manga.author}</p>
                     {manga.genres[0] && (
-                      <span className="inline-block px-2 py-0.5 text-xs bg-primary/10 rounded-full mt-1">
+                      <span className="mt-1 inline-block rounded-full bg-primary/10 px-2 py-0.5 text-xs">
                         {manga.genres[0]}
                       </span>
                     )}
@@ -214,9 +214,11 @@ export function Search3D({
           {isSearching ? (
             <div className="flex justify-center py-6">
               <div className="relative">
-                <div className="w-8 h-8 rounded-full border-2 border-primary border-t-transparent animate-spin" />
-                <div className="absolute inset-0 opacity-50 blur-md w-8 h-8 rounded-full border-2 border-primary border-t-transparent animate-spin"
-                    style={{ animationDuration: '1s', animationDelay: '0.1s' }} />
+                <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+                <div
+                  className="absolute inset-0 h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent opacity-50 blur-md"
+                  style={{ animationDuration: "1s", animationDelay: "0.1s" }}
+                />
               </div>
             </div>
           ) : (
@@ -227,23 +229,23 @@ export function Search3D({
                     {searchResults.length} kết quả cho "{query}"
                   </h3>
                   <ScrollArea className="h-[calc(100vh-300px)] pr-4">
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 pb-4">
+                    <div className="grid grid-cols-2 gap-4 pb-4 sm:grid-cols-3">
                       {searchResults.map((manga, index) => (
                         <div
                           key={manga.id}
-                          className="relative group cursor-pointer"
+                          className="group relative cursor-pointer"
                           onClick={() => navigate(`/manga/${manga.id}`)}
                         >
                           <div className="aspect-[2/3] overflow-hidden rounded-md">
                             <img
                               src={manga.coverImage}
                               alt={manga.title}
-                              className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                              className="h-full w-full object-cover transition-transform group-hover:scale-105"
                             />
                           </div>
                           <div className="mt-2">
-                            <h3 className="text-sm font-medium truncate">{manga.title}</h3>
-                            <p className="text-xs text-muted-foreground truncate">{manga.author}</p>
+                            <h3 className="truncate text-sm font-medium">{manga.title}</h3>
+                            <p className="truncate text-xs text-muted-foreground">{manga.author}</p>
                           </div>
                         </div>
                       ))}
@@ -251,10 +253,8 @@ export function Search3D({
                   </ScrollArea>
                 </div>
               ) : (
-                <div className="text-center py-6">
-                  <p className="text-muted-foreground">
-                    Không tìm thấy kết quả nào cho "{query}"
-                  </p>
+                <div className="py-6 text-center">
+                  <p className="text-muted-foreground">Không tìm thấy kết quả nào cho "{query}"</p>
                 </div>
               )}
             </>

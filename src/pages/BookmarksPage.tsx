@@ -16,16 +16,14 @@ export default function BookmarksPage() {
   };
 
   const removeBookmark = (id: string) => {
-    setBookmarks(bookmarks.filter(manga => manga.id !== id));
+    setBookmarks(bookmarks.filter((manga) => manga.id !== id));
   };
 
   return (
-    <div className="space-y-8 mb-24">
+    <div className="mb-24 space-y-8">
       <div className="flex flex-col space-y-2">
         <h1 className="text-3xl font-bold">Thư viện của tôi</h1>
-        <p className="text-muted-foreground">
-          Quản lý truyện yêu thích và lịch sử đọc của bạn
-        </p>
+        <p className="text-muted-foreground">Quản lý truyện yêu thích và lịch sử đọc của bạn</p>
       </div>
 
       <Tabs defaultValue="bookmarks">
@@ -42,12 +40,12 @@ export default function BookmarksPage() {
 
         <TabsContent value="bookmarks">
           {bookmarks.length > 0 ? (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 md:gap-6">
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 md:gap-6">
               {bookmarks.map((manga) => (
-                <div key={manga.id} className="relative group">
+                <div key={manga.id} className="group relative">
                   <MangaCard manga={manga} />
                   <button
-                    className="absolute top-2 right-2 bg-background/80 backdrop-blur-sm p-1.5 rounded-full shadow-sm opacity-0 group-hover:opacity-100 transition-opacity"
+                    className="absolute right-2 top-2 rounded-full bg-background/80 p-1.5 opacity-0 shadow-sm backdrop-blur-sm transition-opacity group-hover:opacity-100"
                     onClick={() => removeBookmark(manga.id)}
                   >
                     <Trash2 className="h-4 w-4 text-red-500" />
@@ -76,13 +74,8 @@ export default function BookmarksPage() {
         <TabsContent value="history">
           {history.length > 0 ? (
             <>
-              <div className="flex justify-end mb-4">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="gap-2"
-                  onClick={clearHistory}
-                >
+              <div className="mb-4 flex justify-end">
+                <Button variant="outline" size="sm" className="gap-2" onClick={clearHistory}>
                   <Trash2 className="h-4 w-4" />
                   <span>Xóa lịch sử</span>
                 </Button>
@@ -90,17 +83,23 @@ export default function BookmarksPage() {
 
               <div className="space-y-6">
                 {history.map((item) => (
-                  <div key={`${item.manga.id}-${item.chapter}`} className="flex border rounded-lg overflow-hidden">
+                  <div
+                    key={`${item.manga.id}-${item.chapter}`}
+                    className="flex overflow-hidden rounded-lg border"
+                  >
                     <div className="h-24 w-16 shrink-0">
                       <img
                         src={item.manga.coverImage}
                         alt={item.manga.title}
-                        className="w-full h-full object-cover"
+                        className="h-full w-full object-cover"
                       />
                     </div>
-                    <div className="flex flex-1 justify-between items-center p-4">
+                    <div className="flex flex-1 items-center justify-between p-4">
                       <div>
-                        <Link to={`/manga/${item.manga.id}`} className="font-medium hover:text-primary">
+                        <Link
+                          to={`/manga/${item.manga.id}`}
+                          className="font-medium hover:text-primary"
+                        >
                           {item.manga.title}
                         </Link>
                         <p className="text-sm text-muted-foreground">

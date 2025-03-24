@@ -11,11 +11,18 @@ import {
   MessageSquare,
   Share2,
   Star,
-  Tag
+  Tag,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { getMangaById } from "@/lib/data/manga-data";
 import { Badge } from "@/components/ui/badge";
 import { ChapterList } from "@/components/manga/ChapterList";
@@ -28,9 +35,9 @@ export default function MangaDetailPage() {
 
   if (!manga) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh]">
-        <h1 className="text-2xl font-bold mb-4">Không tìm thấy truyện</h1>
-        <p className="text-muted-foreground mb-6">Truyện bạn đang tìm kiếm không tồn tại.</p>
+      <div className="flex min-h-[60vh] flex-col items-center justify-center">
+        <h1 className="mb-4 text-2xl font-bold">Không tìm thấy truyện</h1>
+        <p className="mb-6 text-muted-foreground">Truyện bạn đang tìm kiếm không tồn tại.</p>
         <Link to="/explore">
           <Button>Quay lại trang khám phá</Button>
         </Link>
@@ -46,12 +53,8 @@ export default function MangaDetailPage() {
     <div className="mb-24">
       <div className="flex flex-col gap-4 md:flex-row md:gap-8">
         <div className="md:w-1/3 lg:w-1/4">
-          <div className="relative w-full aspect-[2/3] rounded-lg overflow-hidden shadow-lg">
-            <img
-              src={manga.coverImage}
-              alt={manga.title}
-              className="w-full h-full object-cover"
-            />
+          <div className="relative aspect-[2/3] w-full overflow-hidden rounded-lg shadow-lg">
+            <img src={manga.coverImage} alt={manga.title} className="h-full w-full object-cover" />
           </div>
 
           <div className="mt-6 space-y-4">
@@ -73,7 +76,7 @@ export default function MangaDetailPage() {
           </div>
 
           <div className="mt-6">
-            <h3 className="text-sm font-medium mb-3">Thông tin</h3>
+            <h3 className="mb-3 text-sm font-medium">Thông tin</h3>
             <ul className="space-y-3 text-sm">
               <li className="flex items-center gap-2">
                 <User className="h-4 w-4 text-muted-foreground" />
@@ -88,7 +91,9 @@ export default function MangaDetailPage() {
               <li className="flex items-center gap-2">
                 <Tag className="h-4 w-4 text-muted-foreground" />
                 <span className="text-muted-foreground">Trạng thái:</span>
-                <span className="font-medium">{manga.status === "Terminé" ? "Đã hoàn thành" : "Đang tiến hành"}</span>
+                <span className="font-medium">
+                  {manga.status === "Terminé" ? "Đã hoàn thành" : "Đang tiến hành"}
+                </span>
               </li>
               <li className="flex items-center gap-2">
                 <Globe className="h-4 w-4 text-muted-foreground" />
@@ -100,7 +105,7 @@ export default function MangaDetailPage() {
         </div>
 
         <div className="flex-1">
-          <div className="flex items-center gap-2 mb-2">
+          <div className="mb-2 flex items-center gap-2">
             <Link to="/explore" className="text-sm text-muted-foreground hover:text-primary">
               Khám phá
             </Link>
@@ -108,13 +113,13 @@ export default function MangaDetailPage() {
             <span className="text-sm text-muted-foreground">{manga.title}</span>
           </div>
 
-          <h1 className="text-3xl font-bold mb-2">{manga.title}</h1>
+          <h1 className="mb-2 text-3xl font-bold">{manga.title}</h1>
 
-          <div className="flex items-center gap-4 mb-6">
+          <div className="mb-6 flex items-center gap-4">
             <div className="flex items-center gap-1">
               <Star className="h-4 w-4 fill-primary text-primary" />
               <span className="font-medium">{manga.rating}</span>
-              <span className="text-muted-foreground text-sm">/5</span>
+              <span className="text-sm text-muted-foreground">/5</span>
             </div>
             <div className="flex items-center gap-1">
               <Book className="h-4 w-4 text-muted-foreground" />
@@ -128,7 +133,9 @@ export default function MangaDetailPage() {
 
           <div className="mb-6 flex flex-wrap gap-2">
             {manga.genres.map((genre) => (
-              <Badge key={genre} variant="secondary">{genre}</Badge>
+              <Badge key={genre} variant="secondary">
+                {genre}
+              </Badge>
             ))}
           </div>
 
@@ -137,9 +144,7 @@ export default function MangaDetailPage() {
               <CardTitle>Giới thiệu</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-muted-foreground whitespace-pre-line">
-                {manga.description}
-              </p>
+              <p className="whitespace-pre-line text-muted-foreground">{manga.description}</p>
             </CardContent>
           </Card>
 
@@ -156,7 +161,7 @@ export default function MangaDetailPage() {
 
             <TabsContent value="comments">
               <div className="space-y-4">
-                <div className="flex items-start gap-4 pb-4 border-b">
+                <div className="flex items-start gap-4 border-b pb-4">
                   <Avatar>
                     <AvatarFallback>UN</AvatarFallback>
                   </Avatar>
@@ -165,13 +170,23 @@ export default function MangaDetailPage() {
                       <h4 className="font-medium">Người dùng123</h4>
                       <span className="text-xs text-muted-foreground">2 ngày trước</span>
                     </div>
-                    <p className="mt-1 text-sm">Tôi thích truyện này, cốt truyện hấp dẫn và nhân vật phát triển tốt!</p>
-                    <div className="flex items-center gap-4 mt-2">
-                      <Button variant="ghost" size="sm" className="text-xs flex items-center gap-1 h-auto p-0">
+                    <p className="mt-1 text-sm">
+                      Tôi thích truyện này, cốt truyện hấp dẫn và nhân vật phát triển tốt!
+                    </p>
+                    <div className="mt-2 flex items-center gap-4">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="flex h-auto items-center gap-1 p-0 text-xs"
+                      >
                         <Heart className="h-3 w-3" />
                         <span>12</span>
                       </Button>
-                      <Button variant="ghost" size="sm" className="text-xs flex items-center gap-1 h-auto p-0">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="flex h-auto items-center gap-1 p-0 text-xs"
+                      >
                         <MessageSquare className="h-3 w-3" />
                         <span>Trả lời</span>
                       </Button>
@@ -188,13 +203,23 @@ export default function MangaDetailPage() {
                       <h4 className="font-medium">MangaTop</h4>
                       <span className="text-xs text-muted-foreground">5 ngày trước</span>
                     </div>
-                    <p className="mt-1 text-sm">Minh họa thật tuyệt vời, tôi rất mong chờ phần tiếp theo!</p>
-                    <div className="flex items-center gap-4 mt-2">
-                      <Button variant="ghost" size="sm" className="text-xs flex items-center gap-1 h-auto p-0">
+                    <p className="mt-1 text-sm">
+                      Minh họa thật tuyệt vời, tôi rất mong chờ phần tiếp theo!
+                    </p>
+                    <div className="mt-2 flex items-center gap-4">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="flex h-auto items-center gap-1 p-0 text-xs"
+                      >
                         <Heart className="h-3 w-3" />
                         <span>8</span>
                       </Button>
-                      <Button variant="ghost" size="sm" className="text-xs flex items-center gap-1 h-auto p-0">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="flex h-auto items-center gap-1 p-0 text-xs"
+                      >
                         <MessageSquare className="h-3 w-3" />
                         <span>Trả lời</span>
                       </Button>
@@ -205,14 +230,14 @@ export default function MangaDetailPage() {
             </TabsContent>
 
             <TabsContent value="related">
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-2 lg:grid-cols-3">
                 {manga.relatedManga.map((relatedId, index) => {
                   const related = getMangaById(relatedId);
                   if (!related) return null;
 
                   return (
                     <Link to={`/manga/${related.id}`} key={index}>
-                      <Card className="overflow-hidden h-full hover:shadow-md transition-shadow">
+                      <Card className="h-full overflow-hidden transition-shadow hover:shadow-md">
                         <img
                           src={related.coverImage}
                           alt={related.title}

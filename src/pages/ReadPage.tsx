@@ -1,8 +1,24 @@
 import { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { ChevronLeft, ChevronRight, List, Settings, X, Home, ChevronUp, ChevronDown } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  List,
+  Settings,
+  X,
+  Home,
+  ChevronUp,
+  ChevronDown,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetClose } from "@/components/ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+  SheetClose,
+} from "@/components/ui/sheet";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Slider } from "@/components/ui/slider";
@@ -28,15 +44,13 @@ export default function ReadPage() {
   });
 
   // Récupérer les numéros de chapitre précédent et suivant
-  const currentChapterIndex = manga?.chapters.findIndex(
-    (c) => c.number === chapter
-  );
-  const prevChapter = currentChapterIndex > 0
-    ? manga?.chapters[currentChapterIndex - 1].number
-    : null;
-  const nextChapter = currentChapterIndex < (manga?.chapters.length ?? 0) - 1
-    ? manga?.chapters[currentChapterIndex + 1].number
-    : null;
+  const currentChapterIndex = manga?.chapters.findIndex((c) => c.number === chapter);
+  const prevChapter =
+    currentChapterIndex > 0 ? manga?.chapters[currentChapterIndex - 1].number : null;
+  const nextChapter =
+    currentChapterIndex < (manga?.chapters.length ?? 0) - 1
+      ? manga?.chapters[currentChapterIndex + 1].number
+      : null;
 
   // Fonctions de navigation
   const goToPreviousPage = () => {
@@ -102,9 +116,9 @@ export default function ReadPage() {
   // Si le manga ou le chapitre n'existe pas
   if (!manga || !chapterData) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen">
-        <h1 className="text-2xl font-bold mb-4">Không tìm thấy nội dung</h1>
-        <p className="text-muted-foreground mb-6">
+      <div className="flex min-h-screen flex-col items-center justify-center">
+        <h1 className="mb-4 text-2xl font-bold">Không tìm thấy nội dung</h1>
+        <p className="mb-6 text-muted-foreground">
           Truyện hoặc chương bạn đang tìm kiếm không tồn tại.
         </p>
         <Link to="/">
@@ -115,9 +129,9 @@ export default function ReadPage() {
   }
 
   return (
-    <div className="fixed inset-0 bg-background z-50 flex flex-col">
+    <div className="fixed inset-0 z-50 flex flex-col bg-background">
       {/* Barre de navigation du lecteur */}
-      <header className="h-14 border-b flex items-center justify-between px-4">
+      <header className="flex h-14 items-center justify-between border-b px-4">
         <div className="flex items-center gap-2">
           <Link to={`/manga/${id}`}>
             <Button variant="ghost" size="icon">
@@ -142,7 +156,7 @@ export default function ReadPage() {
               <SheetHeader>
                 <SheetTitle>Danh sách chương</SheetTitle>
               </SheetHeader>
-              <ScrollArea className="h-[calc(100vh-8rem)] mt-6">
+              <ScrollArea className="mt-6 h-[calc(100vh-8rem)]">
                 <div className="space-y-1">
                   {manga.chapters.map((c) => (
                     <Link
@@ -180,13 +194,22 @@ export default function ReadPage() {
                   <Tabs
                     defaultValue={readerSettings.mode}
                     onValueChange={(value) =>
-                      setReaderSettings({...readerSettings, mode: value as "vertical" | "horizontal" | "webtoon"})
+                      setReaderSettings({
+                        ...readerSettings,
+                        mode: value as "vertical" | "horizontal" | "webtoon",
+                      })
                     }
                   >
                     <TabsList className="w-full">
-                      <TabsTrigger value="vertical" className="flex-1">Dọc</TabsTrigger>
-                      <TabsTrigger value="horizontal" className="flex-1">Ngang</TabsTrigger>
-                      <TabsTrigger value="webtoon" className="flex-1">Webtoon</TabsTrigger>
+                      <TabsTrigger value="vertical" className="flex-1">
+                        Dọc
+                      </TabsTrigger>
+                      <TabsTrigger value="horizontal" className="flex-1">
+                        Ngang
+                      </TabsTrigger>
+                      <TabsTrigger value="webtoon" className="flex-1">
+                        Webtoon
+                      </TabsTrigger>
                     </TabsList>
                   </Tabs>
                 </div>
@@ -197,12 +220,16 @@ export default function ReadPage() {
                     <Tabs
                       defaultValue={readerSettings.direction}
                       onValueChange={(value) =>
-                        setReaderSettings({...readerSettings, direction: value as "ltr" | "rtl"})
+                        setReaderSettings({ ...readerSettings, direction: value as "ltr" | "rtl" })
                       }
                     >
                       <TabsList className="w-full">
-                        <TabsTrigger value="ltr" className="flex-1">Trái → Phải</TabsTrigger>
-                        <TabsTrigger value="rtl" className="flex-1">Phải → Trái</TabsTrigger>
+                        <TabsTrigger value="ltr" className="flex-1">
+                          Trái → Phải
+                        </TabsTrigger>
+                        <TabsTrigger value="rtl" className="flex-1">
+                          Phải → Trái
+                        </TabsTrigger>
                       </TabsList>
                     </Tabs>
                   </div>
@@ -219,7 +246,7 @@ export default function ReadPage() {
                     max={200}
                     step={10}
                     onValueChange={(value) =>
-                      setReaderSettings({...readerSettings, zoom: value[0]})
+                      setReaderSettings({ ...readerSettings, zoom: value[0] })
                     }
                   />
                 </div>
@@ -237,20 +264,20 @@ export default function ReadPage() {
 
       {/* Contenu principal - Zone de lecture */}
       <main
-        className="flex-1 overflow-auto relative"
+        className="relative flex-1 overflow-auto"
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       >
         {/* Mode vertical */}
         {readerSettings.mode === "vertical" && (
-          <div className="max-w-3xl mx-auto pt-4 pb-20">
+          <div className="mx-auto max-w-3xl pb-20 pt-4">
             {chapterData.pages.map((page, index) => (
               <div key={index} className="mb-4">
                 <img
                   src={page}
                   alt={`Trang ${index + 1}`}
-                  className="w-full h-auto"
+                  className="h-auto w-full"
                   style={{ maxWidth: `${readerSettings.zoom}%` }}
                 />
               </div>
@@ -260,13 +287,13 @@ export default function ReadPage() {
 
         {/* Mode horizontal */}
         {readerSettings.mode === "horizontal" && (
-          <div className="h-full flex items-center justify-center">
+          <div className="flex h-full items-center justify-center">
             <div
-              className="absolute left-0 top-0 w-1/4 h-full cursor-pointer z-10"
+              className="absolute left-0 top-0 z-10 h-full w-1/4 cursor-pointer"
               onClick={readerSettings.direction === "ltr" ? goToPreviousPage : goToNextPage}
             />
             <div
-              className="absolute right-0 top-0 w-1/4 h-full cursor-pointer z-10"
+              className="absolute right-0 top-0 z-10 h-full w-1/4 cursor-pointer"
               onClick={readerSettings.direction === "ltr" ? goToNextPage : goToPreviousPage}
             />
 
@@ -281,14 +308,14 @@ export default function ReadPage() {
 
         {/* Mode webtoon (défiler sans arrêts) */}
         {readerSettings.mode === "webtoon" && (
-          <div className="max-w-screen-sm mx-auto pt-4 pb-20">
+          <div className="mx-auto max-w-screen-sm pb-20 pt-4">
             <div className="space-y-0">
               {chapterData.pages.map((page, index) => (
                 <img
                   key={index}
                   src={page}
                   alt={`Trang ${index + 1}`}
-                  className="w-full h-auto"
+                  className="h-auto w-full"
                   style={{ maxWidth: `${readerSettings.zoom}%` }}
                 />
               ))}
@@ -299,7 +326,7 @@ export default function ReadPage() {
 
       {/* Contrôles de navigation en mode horizontal */}
       {readerSettings.mode === "horizontal" && (
-        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-background/80 backdrop-blur-sm rounded-full border shadow-sm px-4 py-2 flex items-center gap-4">
+        <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 transform items-center gap-4 rounded-full border bg-background/80 px-4 py-2 shadow-sm backdrop-blur-sm">
           <Button
             variant="ghost"
             size="icon"

@@ -36,16 +36,14 @@ export function ChapterList({ chapters, mangaId }: ChapterListProps) {
       const aNum = parseFloat(a.number);
       const bNum = parseFloat(b.number);
 
-      return sortDirection === "asc"
-        ? aNum - bNum
-        : bNum - aNum;
+      return sortDirection === "asc" ? aNum - bNum : bNum - aNum;
     });
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-col sm:flex-row gap-4">
+      <div className="flex flex-col gap-4 sm:flex-row">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform text-muted-foreground" />
           <Input
             placeholder="Tìm kiếm chương..."
             className="pl-10"
@@ -71,7 +69,7 @@ export function ChapterList({ chapters, mangaId }: ChapterListProps) {
           <Button
             variant={showRead ? "outline" : "default"}
             size="sm"
-            className="gap-2 flex-shrink-0"
+            className="flex-shrink-0 gap-2"
             onClick={() => setShowRead(!showRead)}
           >
             {showRead ? (
@@ -92,23 +90,17 @@ export function ChapterList({ chapters, mangaId }: ChapterListProps) {
       {filteredChapters.length > 0 ? (
         <div className="space-y-2">
           {filteredChapters.map((chapter) => (
-            <Link
-              key={chapter.number}
-              to={`/read/${mangaId}/${chapter.number}`}
-              className="block"
-            >
-              <div className={`
-                p-4 rounded-lg border hover:border-primary
-                ${chapter.read ? "opacity-60" : ""}
-                transition-colors
-              `}>
-                <div className="flex justify-between items-center gap-4">
+            <Link key={chapter.number} to={`/read/${mangaId}/${chapter.number}`} className="block">
+              <div
+                className={`rounded-lg border p-4 hover:border-primary ${chapter.read ? "opacity-60" : ""} transition-colors`}
+              >
+                <div className="flex items-center justify-between gap-4">
                   <div>
                     <div className="font-medium">
                       Chương {chapter.number}
                       {chapter.title && `: ${chapter.title}`}
                     </div>
-                    <div className="text-sm text-muted-foreground flex items-center gap-1 mt-1">
+                    <div className="mt-1 flex items-center gap-1 text-sm text-muted-foreground">
                       <Clock className="h-3 w-3" />
                       <span>{chapter.releaseDate}</span>
                     </div>
@@ -116,13 +108,11 @@ export function ChapterList({ chapters, mangaId }: ChapterListProps) {
 
                   <div className="flex items-center gap-2">
                     {chapter.read && (
-                      <div className="px-2 py-1 bg-primary/10 text-primary rounded text-xs font-medium">
+                      <div className="rounded bg-primary/10 px-2 py-1 text-xs font-medium text-primary">
                         Đã đọc
                       </div>
                     )}
-                    <Button size="sm">
-                      Đọc
-                    </Button>
+                    <Button size="sm">Đọc</Button>
                   </div>
                 </div>
               </div>

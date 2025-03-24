@@ -3,7 +3,14 @@ import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff, LogIn, Mail, Lock, Facebook, Twitter } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 
@@ -45,19 +52,17 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="container mx-auto flex flex-col items-center justify-center min-h-[80vh] py-10 px-4">
+    <div className="container mx-auto flex min-h-[80vh] flex-col items-center justify-center px-4 py-10">
       <div className="w-full max-w-md">
         <Card className="border-none shadow-lg">
           <CardHeader className="space-y-1 text-center">
             <CardTitle className="text-2xl font-bold">Đăng nhập</CardTitle>
-            <CardDescription>
-              Đăng nhập để truy cập vào tài khoản của bạn
-            </CardDescription>
+            <CardDescription>Đăng nhập để truy cập vào tài khoản của bạn</CardDescription>
           </CardHeader>
 
           <CardContent className="space-y-4">
             {error && (
-              <div className="p-3 rounded-md bg-destructive/15 text-destructive text-sm mb-4">
+              <div className="mb-4 rounded-md bg-destructive/15 p-3 text-sm text-destructive">
                 {error}
               </div>
             )}
@@ -81,10 +86,7 @@ export default function LoginPage() {
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <Label htmlFor="password">Mật khẩu</Label>
-                  <Link
-                    to="/forgot-password"
-                    className="text-sm text-primary hover:underline"
-                  >
+                  <Link to="/forgot-password" className="text-sm text-primary hover:underline">
                     Quên mật khẩu?
                   </Link>
                 </div>
@@ -103,11 +105,7 @@ export default function LoginPage() {
                     onClick={() => setShowPassword(!showPassword)}
                     className="absolute right-3 top-3 text-muted-foreground hover:text-foreground"
                   >
-                    {showPassword ? (
-                      <EyeOff className="h-4 w-4" />
-                    ) : (
-                      <Eye className="h-4 w-4" />
-                    )}
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>
               </div>
@@ -126,14 +124,10 @@ export default function LoginPage() {
                 </label>
               </div>
 
-              <Button
-                type="submit"
-                className="w-full"
-                disabled={isLoading}
-              >
+              <Button type="submit" className="w-full" disabled={isLoading}>
                 {isLoading ? (
                   <span className="flex items-center gap-1">
-                    <span className="h-4 w-4 rounded-full border-2 border-current border-r-transparent animate-spin" />
+                    <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-r-transparent" />
                     Đang đăng nhập...
                   </span>
                 ) : (
@@ -150,9 +144,7 @@ export default function LoginPage() {
                 <span className="w-full border-t" />
               </div>
               <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-background px-2 text-muted-foreground">
-                  Hoặc đăng nhập với
-                </span>
+                <span className="bg-background px-2 text-muted-foreground">Hoặc đăng nhập với</span>
               </div>
             </div>
 
@@ -171,7 +163,7 @@ export default function LoginPage() {
           <CardFooter className="flex justify-center">
             <p className="text-sm text-muted-foreground">
               Chưa có tài khoản?{" "}
-              <Link to="/register" className="text-primary font-medium hover:underline">
+              <Link to="/register" className="font-medium text-primary hover:underline">
                 Đăng ký ngay
               </Link>
             </p>

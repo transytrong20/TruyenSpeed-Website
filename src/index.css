@@ -69,7 +69,7 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-primary/30 rounded-full hover:bg-primary/50 transition-colors;
+  @apply rounded-full bg-primary/30 transition-colors hover:bg-primary/50;
 }
 
 /* Hide scrollbar when not hovering */
@@ -86,7 +86,8 @@
 
 /* Animation pour la banner 3D */
 @keyframes moveUpDown {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0);
   }
   50% {
@@ -178,7 +179,8 @@
 
 /* Animation pour le spinner de chargement */
 @keyframes pulse-glow {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 0.5;
     filter: blur(5px);
   }

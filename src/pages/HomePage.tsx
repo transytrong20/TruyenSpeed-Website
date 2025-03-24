@@ -2,7 +2,17 @@ import { Link } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MangaCard } from "@/components/manga/MangaCard";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, ChevronLeft, ChevronRight, Star, Clock, BookOpen, TrendingUp, Award, Flame } from "lucide-react";
+import {
+  ArrowRight,
+  ChevronLeft,
+  ChevronRight,
+  Star,
+  Clock,
+  BookOpen,
+  TrendingUp,
+  Award,
+  Flame,
+} from "lucide-react";
 import { featuredManga, latestManga, popularManga, genres, allManga } from "@/lib/data/manga-data";
 import { useEffect, useState, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -27,10 +37,10 @@ export default function HomePage() {
   const trendingManga = [...allManga].sort((a, b) => b.rating - a.rating).slice(0, 8);
 
   // Create manga recommendations by genres
-  const recommendedByGenre = genres.slice(0, 5).map(genre => {
+  const recommendedByGenre = genres.slice(0, 5).map((genre) => {
     return {
       genre,
-      items: allManga.filter(manga => manga.genres.includes(genre)).slice(0, 4)
+      items: allManga.filter((manga) => manga.genres.includes(genre)).slice(0, 4),
     };
   });
 
@@ -40,10 +50,10 @@ export default function HomePage() {
   // Update cursor position smoothly for parallax effect
   useEffect(() => {
     const interval = setInterval(() => {
-      setCursorPosition(prev => {
+      setCursorPosition((prev) => {
         return {
           x: prev.x + (mousePosition.x - prev.x) * 0.1,
-          y: prev.y + (mousePosition.y - prev.y) * 0.1
+          y: prev.y + (mousePosition.y - prev.y) * 0.1,
         };
       });
     }, 15);
@@ -62,16 +72,16 @@ export default function HomePage() {
 
   // Auto-advance carousel
   const advanceCarousel = useCallback(() => {
-    setActiveIndex(prev => (prev + 1) % bannerItems.length);
+    setActiveIndex((prev) => (prev + 1) % bannerItems.length);
   }, [bannerItems.length]);
 
   // Control carousel
   const prevSlide = () => {
-    setActiveIndex(prev => (prev - 1 + bannerItems.length) % bannerItems.length);
+    setActiveIndex((prev) => (prev - 1 + bannerItems.length) % bannerItems.length);
   };
 
   const nextSlide = () => {
-    setActiveIndex(prev => (prev + 1) % bannerItems.length);
+    setActiveIndex((prev) => (prev + 1) % bannerItems.length);
   };
 
   // Set up auto-advance timer
@@ -90,17 +100,17 @@ export default function HomePage() {
   }, [advanceCarousel, isPaused]);
 
   return (
-    <div className="space-y-16 mb-24 pt-8">
+    <div className="mb-24 space-y-16 pt-8">
       <section className="space-y-8">
         <div className="max-w-3xl">
-          <h1 className="text-3xl font-bold tracking-tight mb-3">Chào mừng đến với MangaNovaVN</h1>
+          <h1 className="mb-3 text-3xl font-bold tracking-tight">Chào mừng đến với MangaNovaVN</h1>
           <p className="text-lg text-muted-foreground">
             Khám phá và đọc truyện tranh yêu thích của bạn với trải nghiệm mượt mà và đắm chìm.
           </p>
         </div>
 
         <div
-          className="relative h-[500px] perspective-1000 overflow-hidden rounded-xl mt-6"
+          className="perspective-1000 relative mt-6 h-[500px] overflow-hidden rounded-xl"
           onMouseMove={handleMouseMove}
           onMouseEnter={() => setIsPaused(true)}
           onMouseLeave={() => {
@@ -124,31 +134,31 @@ export default function HomePage() {
                 exit={{ opacity: 0, scale: 0.9, rotateY: -45 }}
                 transition={{ duration: 0.5 }}
                 style={{
-                  position: 'absolute',
+                  position: "absolute",
                   top: 0,
                   left: 0,
-                  width: '100%',
-                  height: '100%',
-                  display: index === activeIndex ? 'block' : 'none',
-                  transformStyle: "preserve-3d"
+                  width: "100%",
+                  height: "100%",
+                  display: index === activeIndex ? "block" : "none",
+                  transformStyle: "preserve-3d",
                 }}
               >
-                <Link to={`/manga/${manga.id}`} className="block w-full h-full">
+                <Link to={`/manga/${manga.id}`} className="block h-full w-full">
                   {/* Banner Card with 3D effect */}
                   <div
-                    className="relative overflow-hidden rounded-xl shadow-2xl w-full h-full transform-gpu"
+                    className="relative h-full w-full transform-gpu overflow-hidden rounded-xl shadow-2xl"
                     style={{
                       backgroundImage: `
                         linear-gradient(135deg,
                         rgba(20, 20, 30, 0.9) 0%,
                         rgba(30, 30, 50, 0.8) 100%
                       )`,
-                      transformStyle: "preserve-3d"
+                      transformStyle: "preserve-3d",
                     }}
                   >
                     {/* Background with parallax effect */}
                     <div
-                      className="absolute inset-0 blur-[2px] opacity-80"
+                      className="absolute inset-0 opacity-80 blur-[2px]"
                       style={{
                         transform: `translateX(${cursorPosition.x * -20}px) translateY(${cursorPosition.y * -20}px)`,
                         backgroundImage: `url(${manga.coverImage})`,
@@ -160,7 +170,7 @@ export default function HomePage() {
 
                     {/* Character image with parallax effect */}
                     <div
-                      className="absolute inset-0 flex items-center justify-center transform-gpu"
+                      className="absolute inset-0 flex transform-gpu items-center justify-center"
                       style={{
                         transform: `translateX(${cursorPosition.x * 15}px) translateY(${cursorPosition.y * 15}px) translateZ(40px)`,
                         zIndex: 1,
@@ -169,27 +179,28 @@ export default function HomePage() {
                       <img
                         src={manga.coverImage}
                         alt={manga.title}
-                        className="h-[110%] object-cover object-center mask-linear-gradient"
+                        className="mask-linear-gradient h-[110%] object-cover object-center"
                       />
                     </div>
 
                     {/* Title and description with 3D effect */}
                     <div
-                      className="absolute bottom-0 left-0 right-0 p-8 text-white z-10"
+                      className="absolute bottom-0 left-0 right-0 z-10 p-8 text-white"
                       style={{
                         transform: `translateZ(30px)`,
                         transformStyle: "preserve-3d",
-                        background: "linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%)",
+                        background:
+                          "linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%)",
                       }}
                     >
                       <h3
-                        className="text-3xl font-bold mb-3"
+                        className="mb-3 text-3xl font-bold"
                         style={{ transform: "translateZ(10px)" }}
                       >
                         {manga.title}
                       </h3>
                       <p
-                        className="text-base text-white/80 line-clamp-3 mb-6 max-w-3xl"
+                        className="mb-6 line-clamp-3 max-w-3xl text-base text-white/80"
                         style={{ transform: "translateZ(5px)" }}
                       >
                         {manga.description}
@@ -199,7 +210,10 @@ export default function HomePage() {
                         whileTap={{ scale: 0.95 }}
                         style={{ transform: "translateZ(20px)" }}
                       >
-                        <Button size="lg" className="bg-primary/80 hover:bg-primary/100 backdrop-blur-sm">
+                        <Button
+                          size="lg"
+                          className="bg-primary/80 backdrop-blur-sm hover:bg-primary/100"
+                        >
                           Xem chi tiết
                         </Button>
                       </motion.div>
@@ -207,9 +221,10 @@ export default function HomePage() {
 
                     {/* Decorative elements for 3D effect */}
                     <div
-                      className="absolute top-4 right-4 w-20 h-20 rounded-full opacity-60 blur-md"
+                      className="absolute right-4 top-4 h-20 w-20 rounded-full opacity-60 blur-md"
                       style={{
-                        background: "radial-gradient(circle, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 70%)",
+                        background:
+                          "radial-gradient(circle, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 70%)",
                         transform: `translateZ(25px) translateX(${cursorPosition.x * -10}px) translateY(${cursorPosition.y * -10}px)`,
                       }}
                     />
@@ -220,15 +235,13 @@ export default function HomePage() {
           </AnimatePresence>
 
           {/* Carousel controls */}
-          <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-20 flex space-x-3">
+          <div className="absolute bottom-6 left-1/2 z-20 flex -translate-x-1/2 transform space-x-3">
             {bannerItems.map((_, index) => (
               <button
                 key={index}
                 onClick={() => setActiveIndex(index)}
-                className={`w-3 h-3 rounded-full transition-all ${
-                  index === activeIndex
-                    ? "bg-white w-6"
-                    : "bg-white/50 hover:bg-white/80"
+                className={`h-3 w-3 rounded-full transition-all ${
+                  index === activeIndex ? "w-6 bg-white" : "bg-white/50 hover:bg-white/80"
                 }`}
                 aria-label={`Go to slide ${index + 1}`}
               />
@@ -238,7 +251,7 @@ export default function HomePage() {
           {/* Previous/Next buttons */}
           <button
             onClick={prevSlide}
-            className="absolute left-4 top-1/2 transform -translate-y-1/2 z-20 bg-black/30 hover:bg-black/50 text-white p-3 rounded-full backdrop-blur-sm transition-all"
+            className="absolute left-4 top-1/2 z-20 -translate-y-1/2 transform rounded-full bg-black/30 p-3 text-white backdrop-blur-sm transition-all hover:bg-black/50"
             aria-label="Previous slide"
           >
             <ChevronLeft className="h-6 w-6" />
@@ -246,7 +259,7 @@ export default function HomePage() {
 
           <button
             onClick={nextSlide}
-            className="absolute right-4 top-1/2 transform -translate-y-1/2 z-20 bg-black/30 hover:bg-black/50 text-white p-3 rounded-full backdrop-blur-sm transition-all"
+            className="absolute right-4 top-1/2 z-20 -translate-y-1/2 transform rounded-full bg-black/30 p-3 text-white backdrop-blur-sm transition-all hover:bg-black/50"
             aria-label="Next slide"
           >
             <ChevronRight className="h-6 w-6" />
@@ -258,7 +271,7 @@ export default function HomePage() {
       <section className="space-y-6">
         <div className="flex items-center justify-between border-b pb-2">
           <div className="flex items-center">
-            <Clock className="h-5 w-5 mr-2 text-primary" />
+            <Clock className="mr-2 h-5 w-5 text-primary" />
             <h2 className="text-2xl font-semibold tracking-tight">Truyện mới cập nhật</h2>
           </div>
           <Link to="/explore">
@@ -268,7 +281,7 @@ export default function HomePage() {
           </Link>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5 md:gap-6">
+        <div className="grid grid-cols-2 gap-5 md:grid-cols-3 md:gap-6 lg:grid-cols-4 xl:grid-cols-5">
           {latestManga.slice(0, 10).map((manga) => (
             <MangaCard key={manga.id} manga={manga} />
           ))}
@@ -280,7 +293,7 @@ export default function HomePage() {
         <Tabs defaultValue="popular">
           <div className="flex items-center justify-between border-b pb-2">
             <div className="flex items-center">
-              <Award className="h-5 w-5 mr-2 text-amber-500" />
+              <Award className="mr-2 h-5 w-5 text-amber-500" />
               <h2 className="text-2xl font-semibold tracking-tight">Khám phá theo thể loại</h2>
             </div>
             <TabsList>
@@ -291,7 +304,7 @@ export default function HomePage() {
           </div>
 
           <TabsContent value="popular" className="mt-6">
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5 md:gap-6">
+            <div className="grid grid-cols-2 gap-5 md:grid-cols-3 md:gap-6 lg:grid-cols-4 xl:grid-cols-5">
               {popularManga.slice(0, 10).map((manga) => (
                 <MangaCard key={manga.id} manga={manga} />
               ))}
@@ -299,7 +312,7 @@ export default function HomePage() {
           </TabsContent>
 
           <TabsContent value="trending" className="mt-6">
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5 md:gap-6">
+            <div className="grid grid-cols-2 gap-5 md:grid-cols-3 md:gap-6 lg:grid-cols-4 xl:grid-cols-5">
               {popularManga.slice(4, 14).map((manga) => (
                 <MangaCard key={manga.id} manga={manga} />
               ))}
@@ -307,7 +320,7 @@ export default function HomePage() {
           </TabsContent>
 
           <TabsContent value="new" className="mt-6">
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5 md:gap-6">
+            <div className="grid grid-cols-2 gap-5 md:grid-cols-3 md:gap-6 lg:grid-cols-4 xl:grid-cols-5">
               {latestManga.slice(0, 10).map((manga) => (
                 <MangaCard key={manga.id} manga={manga} />
               ))}
@@ -320,7 +333,7 @@ export default function HomePage() {
       <section className="space-y-6">
         <div className="flex items-center justify-between border-b pb-2">
           <div className="flex items-center">
-            <Star className="h-5 w-5 mr-2 text-yellow-500" />
+            <Star className="mr-2 h-5 w-5 text-yellow-500" />
             <h2 className="text-2xl font-semibold tracking-tight">Truyện nổi bật</h2>
           </div>
           <Link to="/explore">
@@ -330,7 +343,7 @@ export default function HomePage() {
           </Link>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5">
+        <div className="grid grid-cols-2 gap-5 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
           {featuredManga.map((manga) => (
             <Link
               key={manga.id}
@@ -345,9 +358,9 @@ export default function HomePage() {
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
                 <div className="absolute bottom-0 p-4 text-white">
-                  <h3 className="font-bold text-lg mb-1">{manga.title}</h3>
-                  <div className="flex items-center mb-2">
-                    <Star className="h-4 w-4 text-yellow-400 fill-yellow-400 mr-1" />
+                  <h3 className="mb-1 text-lg font-bold">{manga.title}</h3>
+                  <div className="mb-2 flex items-center">
+                    <Star className="mr-1 h-4 w-4 fill-yellow-400 text-yellow-400" />
                     <span className="text-sm">{manga.rating}</span>
                   </div>
                   <div className="flex flex-wrap gap-1">
@@ -367,23 +380,23 @@ export default function HomePage() {
       {/* MỤC 4: Thể loại đa dạng - Horizontal filter tabs */}
       <section className="space-y-6">
         <div className="flex items-center border-b pb-2">
-          <BookOpen className="h-5 w-5 mr-2 text-blue-500" />
+          <BookOpen className="mr-2 h-5 w-5 text-blue-500" />
           <h2 className="text-2xl font-semibold tracking-tight">Khám phá theo thể loại</h2>
         </div>
 
-        <div className="flex flex-wrap gap-2 mb-6">
+        <div className="mb-6 flex flex-wrap gap-2">
           <Badge
             variant={selectedGenre === "All" ? "default" : "outline"}
-            className="cursor-pointer text-sm py-1 px-3"
+            className="cursor-pointer px-3 py-1 text-sm"
             onClick={() => setSelectedGenre("All")}
           >
             Tất cả
           </Badge>
-          {genres.slice(0, 5).map(genre => (
+          {genres.slice(0, 5).map((genre) => (
             <Badge
               key={genre}
               variant={selectedGenre === genre ? "default" : "outline"}
-              className="cursor-pointer text-sm py-1 px-3"
+              className="cursor-pointer px-3 py-1 text-sm"
               onClick={() => setSelectedGenre(genre)}
             >
               {genre}
@@ -391,9 +404,9 @@ export default function HomePage() {
           ))}
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+        <div className="grid grid-cols-2 gap-4 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
           {allManga
-            .filter(manga => selectedGenre === "All" || manga.genres.includes(selectedGenre))
+            .filter((manga) => selectedGenre === "All" || manga.genres.includes(selectedGenre))
             .slice(0, 12)
             .map((manga) => (
               <Link key={manga.id} to={`/manga/${manga.id}`} className="group">
@@ -401,10 +414,10 @@ export default function HomePage() {
                   <img
                     src={manga.coverImage}
                     alt={manga.title}
-                    className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300"
+                    className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
                   />
-                  <div className="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
-                    <h3 className="text-white text-sm font-medium truncate">{manga.title}</h3>
+                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-2 opacity-0 transition-opacity group-hover:opacity-100">
+                    <h3 className="truncate text-sm font-medium text-white">{manga.title}</h3>
                   </div>
                 </div>
               </Link>
@@ -416,7 +429,7 @@ export default function HomePage() {
       <section className="space-y-6">
         <div className="flex items-center justify-between border-b pb-2">
           <div className="flex items-center">
-            <TrendingUp className="h-5 w-5 mr-2 text-green-500" />
+            <TrendingUp className="mr-2 h-5 w-5 text-green-500" />
             <h2 className="text-2xl font-semibold tracking-tight">Truyện trending có rating cao</h2>
           </div>
           <Link to="/explore">
@@ -430,23 +443,25 @@ export default function HomePage() {
           <CardContent className="p-0">
             <ul className="divide-y">
               {trendingManga.map((manga) => (
-                <li key={manga.id} className="p-4 hover:bg-muted/50 transition-colors">
+                <li key={manga.id} className="p-4 transition-colors hover:bg-muted/50">
                   <Link to={`/manga/${manga.id}`} className="flex items-center gap-4">
                     <img
                       src={manga.coverImage}
                       alt={manga.title}
-                      className="h-20 w-14 object-cover rounded-md"
+                      className="h-20 w-14 rounded-md object-cover"
                     />
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-medium truncate">{manga.title}</h3>
-                      <p className="text-sm text-muted-foreground truncate">{manga.author}</p>
-                      <div className="flex items-center mt-1">
-                        <Star className="h-3.5 w-3.5 text-yellow-500 fill-yellow-500 mr-1" />
+                    <div className="min-w-0 flex-1">
+                      <h3 className="truncate font-medium">{manga.title}</h3>
+                      <p className="truncate text-sm text-muted-foreground">{manga.author}</p>
+                      <div className="mt-1 flex items-center">
+                        <Star className="mr-1 h-3.5 w-3.5 fill-yellow-500 text-yellow-500" />
                         <span className="text-xs text-muted-foreground">{manga.rating}</span>
                       </div>
                     </div>
                     <div className="flex flex-col items-end">
-                      <Badge variant="outline" className="mb-1">{manga.status}</Badge>
+                      <Badge variant="outline" className="mb-1">
+                        {manga.status}
+                      </Badge>
                       <span className="text-xs text-muted-foreground">{manga.lastUpdate}</span>
                     </div>
                   </Link>
@@ -460,16 +475,16 @@ export default function HomePage() {
       {/* MỤC 6: Đề xuất theo thể loại - Card grid by category */}
       <section className="space-y-6">
         <div className="flex items-center border-b pb-2">
-          <Flame className="h-5 w-5 mr-2 text-red-500" />
+          <Flame className="mr-2 h-5 w-5 text-red-500" />
           <h2 className="text-2xl font-semibold tracking-tight">Đề xuất theo thể loại</h2>
         </div>
 
         <div className="space-y-10">
-          {recommendedByGenre.map(({genre, items}) => (
+          {recommendedByGenre.map(({ genre, items }) => (
             <div key={genre} className="space-y-3">
               <div className="flex items-center justify-between">
-                <h3 className="text-lg font-medium flex items-center">
-                  <span className="w-1.5 h-1.5 bg-primary rounded-full mr-2"></span>
+                <h3 className="flex items-center text-lg font-medium">
+                  <span className="mr-2 h-1.5 w-1.5 rounded-full bg-primary"></span>
                   {genre}
                 </h3>
                 <Link to={`/explore?genre=${genre}`}>
@@ -479,19 +494,23 @@ export default function HomePage() {
                 </Link>
               </div>
 
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
+              <div className="grid grid-cols-2 gap-5 md:grid-cols-4">
                 {items.map((manga) => (
                   <Link key={manga.id} to={`/manga/${manga.id}`} className="group space-y-2">
                     <div className="overflow-hidden rounded-md">
                       <img
                         src={manga.coverImage}
                         alt={manga.title}
-                        className="w-full h-[200px] object-cover group-hover:scale-105 transition-transform duration-300"
+                        className="h-[200px] w-full object-cover transition-transform duration-300 group-hover:scale-105"
                       />
                     </div>
                     <div>
-                      <h4 className="font-medium truncate group-hover:text-primary transition-colors">{manga.title}</h4>
-                      <p className="text-xs text-muted-foreground">{manga.chapters.length} chapters</p>
+                      <h4 className="truncate font-medium transition-colors group-hover:text-primary">
+                        {manga.title}
+                      </h4>
+                      <p className="text-xs text-muted-foreground">
+                        {manga.chapters.length} chapters
+                      </p>
                     </div>
                   </Link>
                 ))}

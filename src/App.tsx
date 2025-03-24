@@ -21,7 +21,11 @@ const NotFoundPage = lazy(() => import("@/pages/NotFoundPage"));
 function App() {
   return (
     <>
-      <Suspense fallback={<div className="w-full h-screen flex items-center justify-center">Đang tải...</div>}>
+      <Suspense
+        fallback={
+          <div className="flex h-screen w-full items-center justify-center">Đang tải...</div>
+        }
+      >
         <Routes>
           <Route path="/" element={<MainLayout />}>
             <Route index element={<HomePage />} />

@@ -19,19 +19,17 @@ export function MangaCarousel({ items }: MangaCarouselProps) {
       <CarouselContent>
         {items.map((item) => (
           <CarouselItem key={item.id} className="md:basis-1/2 lg:basis-1/3">
-            <div className="p-1 h-full">
-              <div className="relative overflow-hidden rounded-xl bg-black aspect-[16/9] h-full">
+            <div className="h-full p-1">
+              <div className="relative aspect-[16/9] h-full overflow-hidden rounded-xl bg-black">
                 <img
                   src={item.coverImage}
                   alt={item.title}
-                  className="object-cover w-full h-full opacity-60"
+                  className="h-full w-full object-cover opacity-60"
                 />
                 <div className="absolute inset-0 flex flex-col justify-end p-6">
                   <div className="space-y-2">
                     <h3 className="text-xl font-bold text-white">{item.title}</h3>
-                    <p className="text-sm text-white/80 line-clamp-2">
-                      {item.description}
-                    </p>
+                    <p className="line-clamp-2 text-sm text-white/80">{item.description}</p>
                     <div className="pt-4">
                       <Link to={`/manga/${item.id}`}>
                         <Button size="sm">Voir les détails</Button>

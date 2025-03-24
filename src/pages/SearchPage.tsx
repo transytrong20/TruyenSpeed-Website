@@ -49,26 +49,26 @@ export default function SearchPage() {
           manga.title.toLowerCase().includes(query.toLowerCase()) ||
           manga.description.toLowerCase().includes(query.toLowerCase()) ||
           manga.author.toLowerCase().includes(query.toLowerCase()) ||
-          manga.genres.some((genre) => genre.toLowerCase().includes(query.toLowerCase()))
+          manga.genres.some((genre) => genre.toLowerCase().includes(query.toLowerCase())),
       );
 
       setSearchResults(results);
 
       // Phân loại kết quả theo thể loại
-      const action = results.filter(manga =>
-        manga.genres.some(genre => genre.toLowerCase() === "action")
+      const action = results.filter((manga) =>
+        manga.genres.some((genre) => genre.toLowerCase() === "action"),
       );
 
-      const adventure = results.filter(manga =>
-        manga.genres.some(genre => genre.toLowerCase() === "aventure")
+      const adventure = results.filter((manga) =>
+        manga.genres.some((genre) => genre.toLowerCase() === "aventure"),
       );
 
-      const comedy = results.filter(manga =>
-        manga.genres.some(genre => genre.toLowerCase() === "comédie")
+      const comedy = results.filter((manga) =>
+        manga.genres.some((genre) => genre.toLowerCase() === "comédie"),
       );
 
-      const drama = results.filter(manga =>
-        manga.genres.some(genre => genre.toLowerCase() === "drame")
+      const drama = results.filter((manga) =>
+        manga.genres.some((genre) => genre.toLowerCase() === "drame"),
       );
 
       setFilteredResults({
@@ -76,7 +76,7 @@ export default function SearchPage() {
         action,
         adventure,
         comedy,
-        drama
+        drama,
       });
 
       setIsSearching(false);
@@ -100,11 +100,11 @@ export default function SearchPage() {
   }, [initialQuery]);
 
   return (
-    <div className="container mx-auto px-4 py-6 animate-fade-in">
+    <div className="animate-fade-in container mx-auto px-4 py-6">
       <div className="mb-6 space-y-4">
         <h1 className="text-3xl font-bold tracking-tight">Tìm kiếm</h1>
 
-        <div className="flex justify-center max-w-xl mx-auto">
+        <div className="mx-auto flex max-w-xl justify-center">
           <Search3D
             autoFocus
             onSearch={handleSearch}
@@ -117,20 +117,22 @@ export default function SearchPage() {
 
       {isSearching ? (
         <div className="flex justify-center py-10">
-          <div className="relative perspective-1000">
-            <div className="w-12 h-12 rounded-full border-4 border-primary border-t-transparent animate-spin" />
-            <div className="absolute inset-0 opacity-50 blur-md w-12 h-12 rounded-full border-4 border-primary border-t-transparent animate-spin"
-                style={{ animationDuration: '1s', animationDelay: '0.1s' }} />
+          <div className="perspective-1000 relative">
+            <div className="h-12 w-12 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+            <div
+              className="absolute inset-0 h-12 w-12 animate-spin rounded-full border-4 border-primary border-t-transparent opacity-50 blur-md"
+              style={{ animationDuration: "1s", animationDelay: "0.1s" }}
+            />
           </div>
         </div>
       ) : (
         <>
           {initialQuery && (
             <div className="mb-4">
-              <h2 className="text-xl font-bold mb-1">Kết quả tìm kiếm</h2>
+              <h2 className="mb-1 text-xl font-bold">Kết quả tìm kiếm</h2>
               <p className="text-muted-foreground">
                 {searchResults.length === 0
-                  ? "Không tìm thấy kết quả nào cho \"" + initialQuery + "\""
+                  ? 'Không tìm thấy kết quả nào cho "' + initialQuery + '"'
                   : `Tìm thấy ${searchResults.length} kết quả cho "${initialQuery}"`}
               </p>
             </div>
@@ -141,20 +143,20 @@ export default function SearchPage() {
               defaultValue="all"
               value={activeTab}
               onValueChange={handleTabChange}
-              className="w-full mb-4"
+              className="mb-4 w-full"
             >
               <div className="mb-4 border-b">
-                <TabsList className="bg-transparent h-10 mb-[-1px]">
+                <TabsList className="mb-[-1px] h-10 bg-transparent">
                   <TabsTrigger
                     value="all"
-                    className="data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none rounded-none h-10 px-3"
+                    className="h-10 rounded-none px-3 data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none"
                   >
                     Tất cả ({filteredResults.all.length})
                   </TabsTrigger>
                   {filteredResults.action.length > 0 && (
                     <TabsTrigger
                       value="action"
-                      className="data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none rounded-none h-10 px-3"
+                      className="h-10 rounded-none px-3 data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none"
                     >
                       Hành Động ({filteredResults.action.length})
                     </TabsTrigger>
@@ -162,7 +164,7 @@ export default function SearchPage() {
                   {filteredResults.adventure.length > 0 && (
                     <TabsTrigger
                       value="adventure"
-                      className="data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none rounded-none h-10 px-3"
+                      className="h-10 rounded-none px-3 data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none"
                     >
                       Phiêu Lưu ({filteredResults.adventure.length})
                     </TabsTrigger>
@@ -170,7 +172,7 @@ export default function SearchPage() {
                   {filteredResults.comedy.length > 0 && (
                     <TabsTrigger
                       value="comedy"
-                      className="data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none rounded-none h-10 px-3"
+                      className="h-10 rounded-none px-3 data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none"
                     >
                       Hài Hước ({filteredResults.comedy.length})
                     </TabsTrigger>
@@ -178,7 +180,7 @@ export default function SearchPage() {
                   {filteredResults.drama.length > 0 && (
                     <TabsTrigger
                       value="drama"
-                      className="data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none rounded-none h-10 px-3"
+                      className="h-10 rounded-none px-3 data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none"
                     >
                       Kịch Tính ({filteredResults.drama.length})
                     </TabsTrigger>
@@ -187,8 +189,8 @@ export default function SearchPage() {
               </div>
 
               <ScrollArea className="h-[calc(100vh-260px)]">
-                <TabsContent value="all" className="mt-0 animate-in fade-in-50 duration-300">
-                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 pb-4">
+                <TabsContent value="all" className="mt-0 duration-300 animate-in fade-in-50">
+                  <div className="grid grid-cols-2 gap-4 pb-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
                     {filteredResults.all.map((manga, index) => (
                       <div
                         key={manga.id}
@@ -201,8 +203,8 @@ export default function SearchPage() {
                   </div>
                 </TabsContent>
 
-                <TabsContent value="action" className="mt-0 animate-in fade-in-50 duration-300">
-                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 pb-4">
+                <TabsContent value="action" className="mt-0 duration-300 animate-in fade-in-50">
+                  <div className="grid grid-cols-2 gap-4 pb-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
                     {filteredResults.action.map((manga, index) => (
                       <div
                         key={manga.id}
@@ -215,8 +217,8 @@ export default function SearchPage() {
                   </div>
                 </TabsContent>
 
-                <TabsContent value="adventure" className="mt-0 animate-in fade-in-50 duration-300">
-                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 pb-4">
+                <TabsContent value="adventure" className="mt-0 duration-300 animate-in fade-in-50">
+                  <div className="grid grid-cols-2 gap-4 pb-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
                     {filteredResults.adventure.map((manga, index) => (
                       <div
                         key={manga.id}
@@ -229,8 +231,8 @@ export default function SearchPage() {
                   </div>
                 </TabsContent>
 
-                <TabsContent value="comedy" className="mt-0 animate-in fade-in-50 duration-300">
-                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 pb-4">
+                <TabsContent value="comedy" className="mt-0 duration-300 animate-in fade-in-50">
+                  <div className="grid grid-cols-2 gap-4 pb-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
                     {filteredResults.comedy.map((manga, index) => (
                       <div
                         key={manga.id}
@@ -243,8 +245,8 @@ export default function SearchPage() {
                   </div>
                 </TabsContent>
 
-                <TabsContent value="drama" className="mt-0 animate-in fade-in-50 duration-300">
-                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 pb-4">
+                <TabsContent value="drama" className="mt-0 duration-300 animate-in fade-in-50">
+                  <div className="grid grid-cols-2 gap-4 pb-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
                     {filteredResults.drama.map((manga, index) => (
                       <div
                         key={manga.id}
@@ -263,16 +265,14 @@ export default function SearchPage() {
       )}
 
       {!initialQuery && !isSearching && (
-        <div className="text-center py-16">
-          <p className="text-xl text-muted-foreground mb-4">
+        <div className="py-16 text-center">
+          <p className="mb-4 text-xl text-muted-foreground">
             Nhập từ khóa để tìm kiếm truyện yêu thích của bạn
           </p>
-          <div className="max-w-md mx-auto perspective-1000">
-            <div className="p-8 rounded-xl bg-muted/30 backdrop-blur-sm transform-gpu animate-float">
-              <p className="text-sm text-muted-foreground">
-                Bạn có thể tìm kiếm theo:
-              </p>
-              <ul className="mt-2 text-sm space-y-1">
+          <div className="perspective-1000 mx-auto max-w-md">
+            <div className="transform-gpu animate-float rounded-xl bg-muted/30 p-8 backdrop-blur-sm">
+              <p className="text-sm text-muted-foreground">Bạn có thể tìm kiếm theo:</p>
+              <ul className="mt-2 space-y-1 text-sm">
                 <li>• Tên truyện</li>
                 <li>• Tên tác giả</li>
                 <li>• Thể loại</li>
