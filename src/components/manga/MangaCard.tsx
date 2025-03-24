@@ -1,59 +1,56 @@
-import { Link } from "react-router-dom";
-import { BookOpen, Star } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Manga } from "@/lib/types";
 
 interface MangaCardProps {
-  manga: Manga;
-  showBadge?: boolean;
+  id: string;
+  title: string;
+  coverImage: string;
+  latestChapter?: string;
+  hotLabel?: boolean;
+  newLabel?: boolean;
 }
 
-export function MangaCard({ manga, showBadge = true }: MangaCardProps) {
+export function MangaCard({ id, title, coverImage, latestChapter, hotLabel, newLabel }: MangaCardProps) {
   return (
-    <Link to={`/manga/${manga.id}`} className="group">
-      <Card className="h-full overflow-hidden border-transparent transition-colors duration-300 hover:border-primary">
-        <div className="relative aspect-[2/3] overflow-hidden bg-muted">
-          <img
-            src={manga.coverImage}
-            alt={manga.title}
-            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+    <Card className="overflow-hidden border-none bg-background hover:shadow-lg transition-shadow group">
+      <Link href={`/manga/${id}`} className="block">
+        <div className="relative aspect-[2/3] overflow-hidden">
+          <Image
+            src={coverImage}
+            alt={title}
+            fill
+            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+            className="object-cover group-hover:scale-105 transition-transform duration-300"
           />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
+            <div className="absolute bottom-2 left-2 right-2 text-white text-sm font-medium line-clamp-2">{title}</div>
+          </div>
 
-          {showBadge && manga.status === "En cours" && (
-            <Badge className="absolute left-2 top-2 bg-primary/90 hover:bg-primary">
-              {manga.status}
-            </Badge>
-          )}
-
-          {showBadge && manga.status === "Terminé" && (
-            <Badge className="absolute left-2 top-2 bg-green-600/90 hover:bg-green-600">
-              {manga.status}
-            </Badge>
-          )}
-
-          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-3 pt-6">
-            <div className="flex items-center justify-between text-xs text-white">
-              <div className="flex items-center gap-1">
-                <BookOpen className="h-3 w-3" />
-                <span>{manga.chapters.length} Ch.</span>
-              </div>
-
-              <div className="flex items-center gap-1">
-                <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
-                <span>{manga.rating}</span>
-              </div>
+          {(hotLabel || newLabel) && (
+            <div className="absolute top-2 left-2 flex gap-1">
+              {hotLabel && (
+                <span className="bg-red-500 text-white text-xs font-medium px-1.5 py-0.5 rounded">HOT</span>
+              )}
+              {newLabel && (
+                <span className="bg-blue-500 text-white text-xs font-medium px-1.5 py-0.5 rounded">NEW</span>
+              )}
             </div>
-          </div>
+          )}
         </div>
-
-        <CardFooter className="p-3">
-          <div>
-            <h3 className="line-clamp-1 text-sm font-medium">{manga.title}</h3>
-            <p className="text-xs text-muted-foreground">{manga.author}</p>
-          </div>
+      </Link>
+      <CardContent className="p-2">
+        <Link href={`/manga/${id}`} className="block">
+          <h3 className="font-medium text-sm line-clamp-2 hover:text-primary">{title}</h3>
+        </Link>
+      </CardContent>
+      {latestChapter && (
+        <CardFooter className="p-2 pt-0">
+          <Link href={`/manga/${id}/${latestChapter}`} className="text-xs text-muted-foreground hover:text-primary">
+            Chapter {latestChapter}
+          </Link>
         </CardFooter>
-      </Card>
-    </Link>
+      )}
+    </Card>
   );
 }
