@@ -23,7 +23,7 @@ export function BookPageEffect({ coverImage, title }: BookPageEffectProps) {
     { type: "text", content: `${title} - Chương 1` },
     { type: "text", content: "Truyện bắt đầu vào một ngày đẹp trời..." },
     { type: "text", content: "Nhân vật chính của chúng ta đang phiêu lưu..." },
-    { type: "cover", content: coverImage }
+    { type: "cover", content: coverImage },
   ];
 
   useEffect(() => {
@@ -90,16 +90,22 @@ export function BookPageEffect({ coverImage, title }: BookPageEffectProps) {
                   className="object-cover"
                 />
                 <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
-                  <h2 className="text-2xl font-bold text-white text-center px-4">{title}</h2>
+                  <h2 className="text-2xl font-bold text-white text-center px-4">
+                    {title}
+                  </h2>
                 </div>
               </div>
             ) : (
               <div
                 className={`w-full h-full flex items-center justify-center p-6 ${
-                  isDarkTheme ? "bg-gray-800 text-white" : "bg-white text-gray-800"
+                  isDarkTheme
+                    ? "bg-gray-800 text-white"
+                    : "bg-white text-gray-800"
                 }`}
               >
-                <p className="text-center text-lg">{pages[currentPage].content}</p>
+                <p className="text-center text-lg">
+                  {pages[currentPage].content}
+                </p>
               </div>
             )}
           </div>
@@ -121,16 +127,22 @@ export function BookPageEffect({ coverImage, title }: BookPageEffectProps) {
                     className="object-cover"
                   />
                   <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
-                    <h2 className="text-2xl font-bold text-white text-center px-4">{title}</h2>
+                    <h2 className="text-2xl font-bold text-white text-center px-4">
+                      {title}
+                    </h2>
                   </div>
                 </div>
               ) : (
                 <div
                   className={`w-full h-full flex items-center justify-center p-6 ${
-                    isDarkTheme ? "bg-gray-800 text-white" : "bg-white text-gray-800"
+                    isDarkTheme
+                      ? "bg-gray-800 text-white"
+                      : "bg-white text-gray-800"
                   }`}
                 >
-                  <p className="text-center text-lg">{pages[nextPageIndex].content}</p>
+                  <p className="text-center text-lg">
+                    {pages[nextPageIndex].content}
+                  </p>
                 </div>
               );
             })()}

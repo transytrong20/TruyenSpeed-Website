@@ -10,45 +10,51 @@ const LATEST_MANGA = [
   {
     id: "one-piece",
     title: "One Piece",
-    coverImage: "https://m.media-amazon.com/images/I/81s8xJUzWGL._AC_UF1000,1000_QL80_.jpg",
+    coverImage:
+      "http:192.168.1.63:9000/truyenspeed/ComicBookCover/menh-luan-chi-chu-lam-ke-bien-di-giang-xuong-nhan-gian.webp",
     latestChapter: "1112",
-    newLabel: true
+    newLabel: true,
   },
   {
     id: "jujutsu-kaisen",
     title: "Jujutsu Kaisen",
-    coverImage: "https://m.media-amazon.com/images/I/81TmHlRleJL._AC_UF1000,1000_QL80_.jpg",
+    coverImage:
+      "http:192.168.1.63:9000/truyenspeed/ComicBookCover/menh-luan-chi-chu-lam-ke-bien-di-giang-xuong-nhan-gian.webp",
     latestChapter: "253",
-    newLabel: true
+    newLabel: true,
   },
   {
     id: "spy-x-family",
     title: "Spy x Family",
-    coverImage: "https://m.media-amazon.com/images/I/71vMGRog+iL._AC_UF1000,1000_QL80_.jpg",
+    coverImage:
+      "http:192.168.1.63:9000/truyenspeed/ComicBookCover/menh-luan-chi-chu-lam-ke-bien-di-giang-xuong-nhan-gian.webp",
     latestChapter: "91",
-    newLabel: true
+    newLabel: true,
   },
   {
     id: "chainsaw-man",
     title: "Chainsaw Man",
-    coverImage: "https://m.media-amazon.com/images/I/81YYJn1kBzL._AC_UF1000,1000_QL80_.jpg",
+    coverImage:
+      "https://m.media-amazon.com/images/I/81YYJn1kBzL._AC_UF1000,1000_QL80_.jpg",
     latestChapter: "156",
-    newLabel: true
+    newLabel: true,
   },
   {
     id: "my-hero-academia",
     title: "My Hero Academia",
-    coverImage: "https://m.media-amazon.com/images/I/71olsYX0YsL._AC_UF1000,1000_QL80_.jpg",
+    coverImage:
+      "https://m.media-amazon.com/images/I/71olsYX0YsL._AC_UF1000,1000_QL80_.jpg",
     latestChapter: "421",
-    newLabel: true
+    newLabel: true,
   },
   {
     id: "tokyo-revengers",
     title: "Tokyo Revengers",
-    coverImage: "https://m.media-amazon.com/images/I/71YYHcfrLYL._AC_UF1000,1000_QL80_.jpg",
+    coverImage:
+      "https://m.media-amazon.com/images/I/71YYHcfrLYL._AC_UF1000,1000_QL80_.jpg",
     latestChapter: "278",
-    newLabel: true
-  }
+    newLabel: true,
+  },
 ];
 
 export function LatestSection() {

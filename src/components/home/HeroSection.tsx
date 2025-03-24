@@ -11,35 +11,45 @@ const FEATURED_MANGA = [
   {
     id: "solo-leveling",
     title: "Solo Leveling",
-    description: "Trong một thế giới nơi những 'Thợ săn' với những năng lực đặc biệt được thức tỉnh để chiến đấu với những sinh vật quái dị, Sung Jin-Woo, một thợ săn yếu nhất thế giới, phải vật lộn để kiếm sống.",
-    coverImage: "https://m.media-amazon.com/images/I/71HhfnE8DIL._AC_UF1000,1000_QL80_.jpg",
-    latestChapter: "179"
+    description:
+      "Trong một thế giới nơi những 'Thợ săn' với những năng lực đặc biệt được thức tỉnh để chiến đấu với những sinh vật quái dị, Sung Jin-Woo, một thợ săn yếu nhất thế giới, phải vật lộn để kiếm sống.",
+    coverImage:
+      "https://m.media-amazon.com/images/I/71HhfnE8DIL._AC_UF1000,1000_QL80_.jpg",
+    latestChapter: "179",
   },
   {
     id: "blue-lock",
     title: "Blue Lock",
-    description: "Sau khi đội tuyển Nhật Bản bị loại tại World Cup 2018, Liên đoàn bóng đá Nhật Bản quyết định thuê Ego Jinpachi. Nhiệm vụ của ông là tuyển chọn các cầu thủ cho dự án Blue Lock nhằm tạo ra tiền đạo xuất sắc nhất thế giới.",
-    coverImage: "https://m.media-amazon.com/images/I/81Szj7+ss-L._AC_UF1000,1000_QL80_.jpg",
-    latestChapter: "253"
+    description:
+      "Sau khi đội tuyển Nhật Bản bị loại tại World Cup 2018, Liên đoàn bóng đá Nhật Bản quyết định thuê Ego Jinpachi. Nhiệm vụ của ông là tuyển chọn các cầu thủ cho dự án Blue Lock nhằm tạo ra tiền đạo xuất sắc nhất thế giới.",
+    coverImage:
+      "https://m.media-amazon.com/images/I/81Szj7+ss-L._AC_UF1000,1000_QL80_.jpg",
+    latestChapter: "253",
   },
   {
     id: "tower-of-god",
     title: "Tower of God",
-    description: "Chứa đựng tất cả những gì mà một người có thể mơ ước, Tower of God (Tòa tháp của Chúa) là một thế giới bí ẩn, nơi mà chỉ những cá nhân được chọn mới có thể leo lên tháp và thực hiện ước mơ của họ.",
-    coverImage: "https://m.media-amazon.com/images/I/7194VOAqO8L._AC_UF1000,1000_QL80_.jpg",
-    latestChapter: "571"
-  }
+    description:
+      "Chứa đựng tất cả những gì mà một người có thể mơ ước, Tower of God (Tòa tháp của Chúa) là một thế giới bí ẩn, nơi mà chỉ những cá nhân được chọn mới có thể leo lên tháp và thực hiện ước mơ của họ.",
+    coverImage:
+      "https://m.media-amazon.com/images/I/7194VOAqO8L._AC_UF1000,1000_QL80_.jpg",
+    latestChapter: "571",
+  },
 ];
 
 export function HeroSection() {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const goToPrev = () => {
-    setCurrentIndex((prev) => (prev === 0 ? FEATURED_MANGA.length - 1 : prev - 1));
+    setCurrentIndex((prev) =>
+      prev === 0 ? FEATURED_MANGA.length - 1 : prev - 1
+    );
   };
 
   const goToNext = () => {
-    setCurrentIndex((prev) => (prev === FEATURED_MANGA.length - 1 ? 0 : prev + 1));
+    setCurrentIndex((prev) =>
+      prev === FEATURED_MANGA.length - 1 ? 0 : prev + 1
+    );
   };
 
   // Auto slide every 6 seconds
@@ -68,18 +78,20 @@ export function HeroSection() {
           </div>
 
           <div className="relative z-10 h-full flex flex-col justify-center p-6 md:p-12 md:max-w-[50%]">
-            <h1 className="text-2xl md:text-4xl font-bold text-white mb-2 md:mb-4">{currentManga.title}</h1>
+            <h1 className="text-2xl md:text-4xl font-bold text-white mb-2 md:mb-4">
+              {currentManga.title}
+            </h1>
             <p className="text-gray-200 text-sm md:text-base mb-4 md:mb-6 line-clamp-3 md:line-clamp-4">
               {currentManga.description}
             </p>
             <div className="flex gap-3">
               <Button asChild>
-                <Link href={`/manga/${currentManga.id}`}>
-                  Xem chi tiết
-                </Link>
+                <Link href={`/manga/${currentManga.id}`}>Xem chi tiết</Link>
               </Button>
               <Button variant="secondary" asChild>
-                <Link href={`/manga/${currentManga.id}/${currentManga.latestChapter}`}>
+                <Link
+                  href={`/manga/${currentManga.id}/${currentManga.latestChapter}`}
+                >
                   Đọc chương mới nhất
                 </Link>
               </Button>

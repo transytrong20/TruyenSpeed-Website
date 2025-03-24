@@ -20,7 +20,7 @@ export function MangaPageTurner3D({
   onPrevPage,
   onNextPage,
   mangaTitle,
-  chapterNumber
+  chapterNumber,
 }: MangaPageTurner3DProps) {
   const [currentPage, setCurrentPage] = useState(0);
   const [isFlipping, setIsFlipping] = useState(false);
@@ -35,7 +35,7 @@ export function MangaPageTurner3D({
     if (currentPage < pages.length - 1) {
       setIsFlipping(true);
       setTimeout(() => {
-        setCurrentPage(prev => prev + 1);
+        setCurrentPage((prev) => prev + 1);
         setIsFlipping(false);
       }, 500);
     } else if (onNextPage) {
@@ -49,7 +49,7 @@ export function MangaPageTurner3D({
     if (currentPage > 0) {
       setIsFlipping(true);
       setTimeout(() => {
-        setCurrentPage(prev => prev - 1);
+        setCurrentPage((prev) => prev - 1);
         setIsFlipping(false);
       }, 500);
     } else if (onPrevPage) {
@@ -120,8 +120,14 @@ export function MangaPageTurner3D({
       colors[i3 + 2] = Math.random() * color;
     }
 
-    particlesGeometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
-    particlesGeometry.setAttribute("color", new THREE.BufferAttribute(colors, 3));
+    particlesGeometry.setAttribute(
+      "position",
+      new THREE.BufferAttribute(positions, 3)
+    );
+    particlesGeometry.setAttribute(
+      "color",
+      new THREE.BufferAttribute(colors, 3)
+    );
 
     const particlesMaterial = new THREE.PointsMaterial({
       size: 3,
@@ -171,7 +177,8 @@ export function MangaPageTurner3D({
       {/* Navigation controls */}
       <div className="absolute top-2 left-2 right-2 flex items-center justify-between z-20">
         <div className="text-sm font-medium">
-          {mangaTitle} - Chương {chapterNumber} - Trang {currentPage + 1}/{pages.length}
+          {mangaTitle} - Chương {chapterNumber} - Trang {currentPage + 1}/
+          {pages.length}
         </div>
         <div className="flex gap-2">
           <Button variant="outline" size="sm" onClick={goToPrevPage}>

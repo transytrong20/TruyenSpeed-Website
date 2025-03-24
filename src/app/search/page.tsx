@@ -22,31 +22,36 @@ const ALL_MANGA: MangaItem[] = [
   {
     id: "one-piece",
     title: "One Piece",
-    coverImage: "https://m.media-amazon.com/images/I/81s8xJUzWGL._AC_UF1000,1000_QL80_.jpg",
+    coverImage:
+      "https://m.media-amazon.com/images/I/81s8xJUzWGL._AC_UF1000,1000_QL80_.jpg",
     latestChapter: "1112",
   },
   {
     id: "jujutsu-kaisen",
     title: "Jujutsu Kaisen",
-    coverImage: "https://m.media-amazon.com/images/I/81TmHlRleJL._AC_UF1000,1000_QL80_.jpg",
+    coverImage:
+      "https://m.media-amazon.com/images/I/81TmHlRleJL._AC_UF1000,1000_QL80_.jpg",
     latestChapter: "253",
   },
   {
     id: "spy-x-family",
     title: "Spy x Family",
-    coverImage: "https://m.media-amazon.com/images/I/71vMGRog+iL._AC_UF1000,1000_QL80_.jpg",
+    coverImage:
+      "https://m.media-amazon.com/images/I/71vMGRog+iL._AC_UF1000,1000_QL80_.jpg",
     latestChapter: "91",
   },
   {
     id: "demon-slayer",
     title: "Demon Slayer: Kimetsu no Yaiba",
-    coverImage: "https://m.media-amazon.com/images/I/81miAFqQF-L._AC_UF1000,1000_QL80_.jpg",
+    coverImage:
+      "https://m.media-amazon.com/images/I/81miAFqQF-L._AC_UF1000,1000_QL80_.jpg",
     latestChapter: "205",
   },
   {
     id: "solo-leveling",
     title: "Solo Leveling",
-    coverImage: "https://m.media-amazon.com/images/I/71HhfnE8DIL._AC_UF1000,1000_QL80_.jpg",
+    coverImage:
+      "https://m.media-amazon.com/images/I/71HhfnE8DIL._AC_UF1000,1000_QL80_.jpg",
     latestChapter: "179",
   },
 ];
@@ -66,7 +71,7 @@ export default function SearchPage() {
 
   const performSearch = (query: string) => {
     // Trong thực tế, đây sẽ là một API call
-    const filteredResults = ALL_MANGA.filter(manga =>
+    const filteredResults = ALL_MANGA.filter((manga) =>
       manga.title.toLowerCase().includes(query.toLowerCase())
     );
     setResults(filteredResults);
@@ -92,7 +97,10 @@ export default function SearchPage() {
 
       {/* Search form */}
       <div className="mb-8">
-        <form onSubmit={handleSearch} className="flex w-full max-w-lg items-center space-x-2">
+        <form
+          onSubmit={handleSearch}
+          className="flex w-full max-w-lg items-center space-x-2"
+        >
           <div className="relative flex-1">
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
@@ -112,7 +120,8 @@ export default function SearchPage() {
         <h1 className="text-2xl font-bold mb-6">
           {initialQuery ? (
             <>
-              Kết quả tìm kiếm cho: <span className="text-primary">"{initialQuery}"</span>
+              Kết quả tìm kiếm cho:{" "}
+              <span className="text-primary">"{initialQuery}"</span>
             </>
           ) : (
             "Tìm kiếm truyện"
@@ -122,7 +131,9 @@ export default function SearchPage() {
         {initialQuery && results.length === 0 ? (
           <div className="text-center py-12">
             <FilterX className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-            <h2 className="text-xl font-semibold mb-2">Không tìm thấy kết quả</h2>
+            <h2 className="text-xl font-semibold mb-2">
+              Không tìm thấy kết quả
+            </h2>
             <p className="text-muted-foreground">
               Không tìm thấy truyện nào phù hợp với từ khóa "{initialQuery}"
             </p>
@@ -144,7 +155,9 @@ export default function SearchPage() {
         {!initialQuery && (
           <div className="text-center py-12">
             <Search className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-            <h2 className="text-xl font-semibold mb-2">Tìm kiếm truyện bạn muốn đọc</h2>
+            <h2 className="text-xl font-semibold mb-2">
+              Tìm kiếm truyện bạn muốn đọc
+            </h2>
             <p className="text-muted-foreground">
               Nhập tên truyện, tác giả hoặc thể loại để tìm kiếm
             </p>

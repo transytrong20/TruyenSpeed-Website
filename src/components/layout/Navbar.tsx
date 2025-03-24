@@ -31,15 +31,23 @@ export function Navbar() {
             <span className="text-xl font-bold">MangaReader</span>
           </Link>
           <nav className="hidden md:flex gap-6 ml-6">
-            <Link href="/latest" className="text-sm font-medium transition-colors hover:text-primary">
+            <Link
+              href="/latest"
+              className="text-sm font-medium transition-colors hover:text-primary"
+            >
               Mới cập nhật
             </Link>
-            <Link href="/popular" className="text-sm font-medium transition-colors hover:text-primary">
+            <Link
+              href="/popular"
+              className="text-sm font-medium transition-colors hover:text-primary"
+            >
               Phổ biến
             </Link>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="link" className="text-sm font-medium p-0">Thể loại</Button>
+                <Button variant="link" className="text-sm font-medium p-0">
+                  Thể loại
+                </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="start">
                 <DropdownMenuItem>
@@ -73,10 +81,20 @@ export function Navbar() {
             />
           </form>
           <ThemeToggle />
-          <Button variant="outline" size="sm" asChild className="hidden md:flex">
+          <Button
+            variant="outline"
+            size="sm"
+            asChild
+            className="hidden md:flex"
+          >
             <Link href="/bookmark">Đánh dấu</Link>
           </Button>
-          <Button variant="default" size="sm" asChild className="hidden md:flex">
+          <Button
+            variant="default"
+            size="sm"
+            asChild
+            className="hidden md:flex"
+          >
             <Link href="/history">Lịch sử đọc</Link>
           </Button>
         </div>

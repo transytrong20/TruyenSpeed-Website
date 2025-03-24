@@ -10,45 +10,51 @@ const POPULAR_MANGA = [
   {
     id: "demon-slayer",
     title: "Demon Slayer: Kimetsu no Yaiba",
-    coverImage: "https://m.media-amazon.com/images/I/81miAFqQF-L._AC_UF1000,1000_QL80_.jpg",
+    coverImage:
+      "https://m.media-amazon.com/images/I/81miAFqQF-L._AC_UF1000,1000_QL80_.jpg",
     latestChapter: "205",
-    hotLabel: true
+    hotLabel: true,
   },
   {
     id: "one-punch-man",
     title: "One-Punch Man",
-    coverImage: "https://m.media-amazon.com/images/I/81SrwYY-6-L._AC_UF894,1000_QL80_.jpg",
+    coverImage:
+      "https://m.media-amazon.com/images/I/81SrwYY-6-L._AC_UF894,1000_QL80_.jpg",
     latestChapter: "195",
-    hotLabel: true
+    hotLabel: true,
   },
   {
     id: "attack-on-titan",
     title: "Attack on Titan",
-    coverImage: "https://m.media-amazon.com/images/I/91M9VaZWxOL._AC_UF1000,1000_QL80_.jpg",
+    coverImage:
+      "https://m.media-amazon.com/images/I/91M9VaZWxOL._AC_UF1000,1000_QL80_.jpg",
     latestChapter: "139",
-    hotLabel: true
+    hotLabel: true,
   },
   {
     id: "naruto",
     title: "Naruto",
-    coverImage: "https://m.media-amazon.com/images/I/71QYLrc-IQL._AC_UF1000,1000_QL80_.jpg",
+    coverImage:
+      "https://m.media-amazon.com/images/I/71QYLrc-IQL._AC_UF1000,1000_QL80_.jpg",
     latestChapter: "700",
-    hotLabel: true
+    hotLabel: true,
   },
   {
     id: "dragon-ball-super",
     title: "Dragon Ball Super",
-    coverImage: "https://m.media-amazon.com/images/I/815rh8oxLNL._AC_UF1000,1000_QL80_.jpg",
+    coverImage:
+      "https://m.media-amazon.com/images/I/815rh8oxLNL._AC_UF1000,1000_QL80_.jpg",
     latestChapter: "101",
-    hotLabel: true
+    hotLabel: true,
   },
   {
     id: "black-clover",
     title: "Black Clover",
-    coverImage: "https://m.media-amazon.com/images/I/71lKmKeNRoL._AC_UF1000,1000_QL80_.jpg",
+    coverImage:
+      "https://m.media-amazon.com/images/I/71lKmKeNRoL._AC_UF1000,1000_QL80_.jpg",
     latestChapter: "368",
-    hotLabel: true
-  }
+    hotLabel: true,
+  },
 ];
 
 export function PopularSection() {

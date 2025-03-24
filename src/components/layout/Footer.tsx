@@ -15,37 +15,64 @@ export function Footer() {
         <div className="grid grid-cols-2 md:grid-cols-3 gap-8 text-sm">
           <div className="flex flex-col gap-2">
             <h4 className="font-medium">Danh mục</h4>
-            <Link href="/latest" className="text-muted-foreground hover:text-foreground">
+            <Link
+              href="/latest"
+              className="text-muted-foreground hover:text-foreground"
+            >
               Mới cập nhật
             </Link>
-            <Link href="/popular" className="text-muted-foreground hover:text-foreground">
+            <Link
+              href="/popular"
+              className="text-muted-foreground hover:text-foreground"
+            >
               Phổ biến
             </Link>
-            <Link href="/completed" className="text-muted-foreground hover:text-foreground">
+            <Link
+              href="/completed"
+              className="text-muted-foreground hover:text-foreground"
+            >
               Hoàn thành
             </Link>
           </div>
           <div className="flex flex-col gap-2">
             <h4 className="font-medium">Thể loại</h4>
-            <Link href="/genres/action" className="text-muted-foreground hover:text-foreground">
+            <Link
+              href="/genres/action"
+              className="text-muted-foreground hover:text-foreground"
+            >
               Hành động
             </Link>
-            <Link href="/genres/comedy" className="text-muted-foreground hover:text-foreground">
+            <Link
+              href="/genres/comedy"
+              className="text-muted-foreground hover:text-foreground"
+            >
               Hài hước
             </Link>
-            <Link href="/genres/romance" className="text-muted-foreground hover:text-foreground">
+            <Link
+              href="/genres/romance"
+              className="text-muted-foreground hover:text-foreground"
+            >
               Tình cảm
             </Link>
           </div>
           <div className="flex flex-col gap-2 col-span-2 md:col-span-1 mt-4 md:mt-0">
             <h4 className="font-medium">Liên kết</h4>
-            <Link href="/about" className="text-muted-foreground hover:text-foreground">
+            <Link
+              href="/about"
+              className="text-muted-foreground hover:text-foreground"
+            >
               Về chúng tôi
             </Link>
-            <Link href="/dmca" className="text-muted-foreground hover:text-foreground">
+            <Link
+              href="/dmca"
+              className="text-muted-foreground hover:text-foreground"
+            >
               DMCA
             </Link>
-            <Link href="/terms" className="text-muted-foreground hover:text-foreground">
+            <Link
+              href="/terms"
+              className="text-muted-foreground hover:text-foreground"
+            >
               Điều khoản sử dụng
             </Link>
           </div>

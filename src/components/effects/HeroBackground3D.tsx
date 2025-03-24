@@ -49,27 +49,28 @@ export function HeroBackground3D() {
 
     // Tạo nhiều trang giấy và đặt ở các vị trí ngẫu nhiên
     for (let i = 0; i < 30; i++) {
-      const paper = new THREE.Mesh(paperGeometry, paperMaterial) as PaperMesh;
-      paper.position.set(
+      const paper = new THREE.Mesh(paperGeometry, paperMaterial);
+      const paperMesh = Object.assign(paper, {
+        speed: Math.random() * 0.02 + 0.01,
+        rotationSpeed: {
+          x: Math.random() * 0.01 - 0.005,
+          y: Math.random() * 0.01 - 0.005,
+          z: Math.random() * 0.01 - 0.005,
+        },
+      }) as PaperMesh;
+
+      paperMesh.position.set(
         Math.random() * 20 - 10,
         Math.random() * 20 - 10,
         Math.random() * 10 - 15
       );
-      paper.rotation.set(
+      paperMesh.rotation.set(
         Math.random() * Math.PI,
         Math.random() * Math.PI,
         Math.random() * Math.PI
       );
-      scene.add(paper);
-      papers.push(paper);
-
-      // Thêm thuộc tính để tạo chuyển động
-      paper.speed = Math.random() * 0.02 + 0.01;
-      paper.rotationSpeed = {
-        x: Math.random() * 0.01 - 0.005,
-        y: Math.random() * 0.01 - 0.005,
-        z: Math.random() * 0.01 - 0.005,
-      };
+      scene.add(paperMesh);
+      papers.push(paperMesh);
     }
 
     // Đặt vị trí camera
@@ -80,7 +81,7 @@ export function HeroBackground3D() {
       requestAnimationFrame(animate);
 
       // Xoay tất cả các trang giấy
-      papers.forEach(paper => {
+      papers.forEach((paper) => {
         paper.rotation.x += paper.rotationSpeed.x;
         paper.rotation.y += paper.rotationSpeed.y;
         paper.rotation.z += paper.rotationSpeed.z;

@@ -17,7 +17,8 @@ import { MangaPageTurner3D } from "@/components/effects/MangaPageTurner3D";
 const MANGA_DETAIL = {
   id: "one-piece",
   title: "One Piece",
-  coverImage: "https://m.media-amazon.com/images/I/81s8xJUzWGL._AC_UF1000,1000_QL80_.jpg",
+  coverImage:
+    "https://m.media-amazon.com/images/I/81s8xJUzWGL._AC_UF1000,1000_QL80_.jpg",
   chapters: [
     { number: "1112", title: "Những người bạn" },
     { number: "1111", title: "Bí mật của Laugh Tale" },
@@ -39,20 +40,28 @@ const CHAPTER_PAGES = [
   "https://cdn.statically.io/img/swebtoon.net/f=auto/wp-content/uploads/2020/04/008-82.jpg",
 ];
 
-export default function ChapterPage({ params }: { params: { id: string; chapter: string } }) {
+export default function ChapterPage({
+  params,
+}: {
+  params: { id: string; chapter: string };
+}) {
   const [chapterIndex, setChapterIndex] = useState(0);
   const [selectedChapter, setSelectedChapter] = useState(params.chapter);
   const manga = MANGA_DETAIL;
 
   // Tìm index của chapter hiện tại
   useEffect(() => {
-    const index = manga.chapters.findIndex(c => c.number === params.chapter);
+    const index = manga.chapters.findIndex((c) => c.number === params.chapter);
     setChapterIndex(index !== -1 ? index : 0);
     setSelectedChapter(params.chapter);
   }, [params.chapter, manga.chapters]);
 
-  const prevChapter = chapterIndex < manga.chapters.length - 1 ? manga.chapters[chapterIndex + 1] : null;
-  const nextChapter = chapterIndex > 0 ? manga.chapters[chapterIndex - 1] : null;
+  const prevChapter =
+    chapterIndex < manga.chapters.length - 1
+      ? manga.chapters[chapterIndex + 1]
+      : null;
+  const nextChapter =
+    chapterIndex > 0 ? manga.chapters[chapterIndex - 1] : null;
 
   // Handler khi người dùng chọn chương khác
   const handleChapterChange = (value: string) => {
@@ -130,7 +139,11 @@ export default function ChapterPage({ params }: { params: { id: string; chapter:
         <div className="container">
           <div className="flex items-center justify-between">
             <Button variant="outline" size="sm" asChild disabled={!prevChapter}>
-              <Link href={prevChapter ? `/manga/${manga.id}/${prevChapter.number}` : "#"}>
+              <Link
+                href={
+                  prevChapter ? `/manga/${manga.id}/${prevChapter.number}` : "#"
+                }
+              >
                 Chương trước
               </Link>
             </Button>
@@ -151,7 +164,11 @@ export default function ChapterPage({ params }: { params: { id: string; chapter:
             </div>
 
             <Button variant="outline" size="sm" asChild disabled={!nextChapter}>
-              <Link href={nextChapter ? `/manga/${manga.id}/${nextChapter.number}` : "#"}>
+              <Link
+                href={
+                  nextChapter ? `/manga/${manga.id}/${nextChapter.number}` : "#"
+                }
+              >
                 Chương sau
               </Link>
             </Button>
