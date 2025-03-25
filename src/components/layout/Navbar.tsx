@@ -26,11 +26,11 @@ export function Navbar() {
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Link href="/" className="flex items-center space-x-2">
+        <div className="flex items-center">
+          <Link href="/" className="flex items-center space-x-2 mr-6">
             <span className="text-xl font-bold">MangaReader</span>
           </Link>
-          <nav className="hidden md:flex gap-6 ml-6">
+          <nav className="hidden md:flex items-center space-x-6">
             <Link
               href="/latest"
               className="text-sm font-medium transition-colors hover:text-primary"
@@ -45,31 +45,44 @@ export function Navbar() {
             </Link>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="link" className="text-sm font-medium p-0">
+                <Button
+                  variant="link"
+                  className="text-sm font-medium p-0 h-auto"
+                >
                   Thể loại
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="start">
-                <DropdownMenuItem>
-                  <Link href="/genres/action">Hành động</Link>
+              <DropdownMenuContent align="start" className="w-40">
+                <DropdownMenuItem className="focus:bg-primary/5">
+                  <Link href="/genres/action" className="w-full">
+                    Hành động
+                  </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Link href="/genres/comedy">Hài hước</Link>
+                <DropdownMenuItem className="focus:bg-primary/5">
+                  <Link href="/genres/comedy" className="w-full">
+                    Hài hước
+                  </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Link href="/genres/romance">Tình cảm</Link>
+                <DropdownMenuItem className="focus:bg-primary/5">
+                  <Link href="/genres/romance" className="w-full">
+                    Tình cảm
+                  </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Link href="/genres/fantasy">Giả tưởng</Link>
+                <DropdownMenuItem className="focus:bg-primary/5">
+                  <Link href="/genres/fantasy" className="w-full">
+                    Giả tưởng
+                  </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Link href="/genres/horror">Kinh dị</Link>
+                <DropdownMenuItem className="focus:bg-primary/5">
+                  <Link href="/genres/horror" className="w-full">
+                    Kinh dị
+                  </Link>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </nav>
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center space-x-4">
           <form onSubmit={handleSearch} className="relative hidden md:flex">
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
@@ -85,7 +98,7 @@ export function Navbar() {
             variant="outline"
             size="sm"
             asChild
-            className="hidden md:flex"
+            className="hidden md:inline-flex"
           >
             <Link href="/bookmark">Đánh dấu</Link>
           </Button>
@@ -93,7 +106,7 @@ export function Navbar() {
             variant="default"
             size="sm"
             asChild
-            className="hidden md:flex"
+            className="hidden md:inline-flex"
           >
             <Link href="/history">Lịch sử đọc</Link>
           </Button>

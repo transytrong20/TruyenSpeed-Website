@@ -11,7 +11,7 @@ const LATEST_MANGA = [
     id: "one-piece",
     title: "One Piece",
     coverImage:
-      "http:192.168.1.63:9000/truyenspeed/ComicBookCover/menh-luan-chi-chu-lam-ke-bien-di-giang-xuong-nhan-gian.webp",
+      "http://192.168.1.63:9000/truyenspeed/ComicBookCover/menh-luan-chi-chu-lam-ke-bien-di-giang-xuong-nhan-gian.webp",
     latestChapter: "1112",
     newLabel: true,
   },
@@ -19,7 +19,7 @@ const LATEST_MANGA = [
     id: "jujutsu-kaisen",
     title: "Jujutsu Kaisen",
     coverImage:
-      "http:192.168.1.63:9000/truyenspeed/ComicBookCover/menh-luan-chi-chu-lam-ke-bien-di-giang-xuong-nhan-gian.webp",
+      "http://192.168.1.63:9000/truyenspeed/ComicBookCover/menh-luan-chi-chu-lam-ke-bien-di-giang-xuong-nhan-gian.webp",
     latestChapter: "253",
     newLabel: true,
   },
@@ -27,7 +27,7 @@ const LATEST_MANGA = [
     id: "spy-x-family",
     title: "Spy x Family",
     coverImage:
-      "http:192.168.1.63:9000/truyenspeed/ComicBookCover/menh-luan-chi-chu-lam-ke-bien-di-giang-xuong-nhan-gian.webp",
+      "http://192.168.1.63:9000/truyenspeed/ComicBookCover/menh-luan-chi-chu-lam-ke-bien-di-giang-xuong-nhan-gian.webp",
     latestChapter: "91",
     newLabel: true,
   },

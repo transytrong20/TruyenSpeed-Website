@@ -7,47 +7,57 @@ import { Button } from "@/components/ui/button";
 import { HeroBackground3D } from "@/components/effects/HeroBackground3D";
 import { BookPageEffect } from "@/components/effects/BookPageEffect";
 
-// Mock data: Trong thực tế nên thay thế bằng dữ liệu từ API
-const FEATURED_MANGA = [
-  {
-    id: "solo-leveling",
-    title: "Solo Leveling",
-    description:
-      "Trong một thế giới nơi những 'Thợ săn' với những năng lực đặc biệt được thức tỉnh để chiến đấu với những sinh vật quái dị, Sung Jin-Woo, một thợ săn yếu nhất thế giới, phải vật lộn để kiếm sống.",
-    coverImage:
-      "http://192.168.1.63:9000/truyenspeed/ComicBookCover/menh-luan-chi-chu-lam-ke-bien-di-giang-xuong-nhan-gian.webp",
-    latestChapter: "179",
-  },
-  {
-    id: "blue-lock",
-    title: "Blue Lock",
-    description:
-      "Sau khi đội tuyển Nhật Bản bị loại tại World Cup 2018, Liên đoàn bóng đá Nhật Bản quyết định thuê Ego Jinpachi. Nhiệm vụ của ông là tuyển chọn các cầu thủ cho dự án Blue Lock nhằm tạo ra tiền đạo xuất sắc nhất thế giới.",
-    coverImage:
-      "http://192.168.1.63:9000/truyenspeed/ComicBookCover/menh-luan-chi-chu-lam-ke-bien-di-giang-xuong-nhan-gian.webp",
-    latestChapter: "253",
-  },
-  {
-    id: "tower-of-god",
-    title: "Tower of God",
-    description:
-      "Chứa đựng tất cả những gì mà một người có thể mơ ước, Tower of God (Tòa tháp của Chúa) là một thế giới bí ẩn, nơi mà chỉ những cá nhân được chọn mới có thể leo lên tháp và thực hiện ước mơ của họ.",
-    coverImage:
-      "http://192.168.1.63:9000/truyenspeed/ComicBookCover/menh-luan-chi-chu-lam-ke-bien-di-giang-xuong-nhan-gian.webp",
-    latestChapter: "571",
-  },
-];
+interface BannerData {
+  slug: string;
+  title: string;
+  description: string;
+  latestChapter: string;
+  backgroundImg: string;
+  coverImage1: string;
+  coverImage2: string;
+  coverImage3: string;
+}
 
 export function EnhancedHeroSection() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [featuredManga, setFeaturedManga] = useState<BannerData[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchFeaturedManga = async () => {
+      try {
+        setIsLoading(true);
+        const response = await fetch(
+          "https://localhost:44308/app/data/comic/banner"
+        );
+        if (!response.ok) {
+          throw new Error("Failed to fetch featured manga");
+        }
+        const data = await response.json();
+        setFeaturedManga(data);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Có lỗi xảy ra");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchFeaturedManga();
+  }, []);
+
+  useEffect(() => {
+    const interval = setInterval(goToNext, 8000);
+    return () => clearInterval(interval);
+  }, [featuredManga.length]);
 
   const goToPrev = () => {
     if (isTransitioning) return;
 
     setIsTransitioning(true);
     setCurrentIndex((prev) =>
-      prev === 0 ? FEATURED_MANGA.length - 1 : prev - 1
+      prev === 0 ? featuredManga.length - 1 : prev - 1
     );
 
     setTimeout(() => {
@@ -60,7 +70,7 @@ export function EnhancedHeroSection() {
 
     setIsTransitioning(true);
     setCurrentIndex((prev) =>
-      prev === FEATURED_MANGA.length - 1 ? 0 : prev + 1
+      prev === featuredManga.length - 1 ? 0 : prev + 1
     );
 
     setTimeout(() => {
@@ -69,12 +79,36 @@ export function EnhancedHeroSection() {
   };
 
   // Auto slide every 8 seconds
-  useEffect(() => {
-    const interval = setInterval(goToNext, 8000);
-    return () => clearInterval(interval);
-  }, []);
+  // useEffect(() => {
+  //   const interval = setInterval(goToNext, 8000);
+  //   return () => clearInterval(interval);
+  // }, []);
 
-  const currentManga = FEATURED_MANGA[currentIndex];
+  if (isLoading) {
+    return (
+      <section className="relative bg-background py-8 overflow-hidden">
+        <div className="container">Loading...</div>
+      </section>
+    );
+  }
+
+  if (error) {
+    return (
+      <section className="relative bg-background py-8 overflow-hidden">
+        <div className="container">Error: {error}</div>
+      </section>
+    );
+  }
+
+  if (!featuredManga.length) {
+    return (
+      <section className="relative bg-background py-8 overflow-hidden">
+        <div className="container">No featured manga available</div>
+      </section>
+    );
+  }
+
+  const currentManga = featuredManga[currentIndex];
 
   return (
     <section className="relative bg-background py-8 overflow-hidden">
@@ -83,7 +117,13 @@ export function EnhancedHeroSection() {
 
       <div className="container">
         <div className="relative overflow-hidden rounded-lg aspect-[21/15] md:aspect-[3/1]">
-          <div className="absolute inset-0 flex items-center">
+          <div
+            className="absolute inset-0 flex items-center"
+            style={{
+              // backgroundImage: `url(${currentManga.backgroundImg})`,
+              backgroundImage: `url('https://i.pinimg.com/736x/1c/28/2b/1c282b3553980d3b191825c039cd9c6f.jpg')`,
+            }}
+          >
             <div className="grid w-full h-full grid-cols-1 md:grid-cols-2">
               {/* Left side - Description */}
               <div className="relative z-10 h-full flex flex-col justify-center p-6 md:p-12">
@@ -113,11 +153,13 @@ export function EnhancedHeroSection() {
                   }`}
                 >
                   <Button asChild>
-                    <Link href={`/manga/${currentManga.id}`}>Xem chi tiết</Link>
+                    <Link href={`/manga/${currentManga.slug}`}>
+                      Xem chi tiết
+                    </Link>
                   </Button>
                   <Button variant="secondary" asChild>
                     <Link
-                      href={`/manga/${currentManga.id}/${currentManga.latestChapter}`}
+                      href={`/manga/${currentManga.slug}/${currentManga.latestChapter}`}
                     >
                       Đọc chương mới nhất
                     </Link>
@@ -129,7 +171,11 @@ export function EnhancedHeroSection() {
               <div className="relative h-full hidden md:flex items-center justify-center p-8">
                 <div className="w-[250px] h-[350px]">
                   <BookPageEffect
-                    coverImage={currentManga.coverImage}
+                    coverImages={[
+                      currentManga.coverImage1,
+                      currentManga.coverImage2,
+                      currentManga.coverImage3,
+                    ]}
                     title={currentManga.title}
                   />
                 </div>
@@ -159,7 +205,7 @@ export function EnhancedHeroSection() {
           </div>
 
           <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5 z-20">
-            {FEATURED_MANGA.map((_, index) => (
+            {featuredManga.map((_, index) => (
               <button
                 key={index}
                 className={`w-2 h-2 rounded-full transition-colors ${
