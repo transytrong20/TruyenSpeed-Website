@@ -82,7 +82,7 @@ export function EnhancedHeroSection() {
       <HeroBackground3D />
 
       <div className="container">
-        <div className="relative overflow-hidden rounded-lg aspect-[21/9] md:aspect-[3/1]">
+        <div className="relative overflow-hidden rounded-lg aspect-[21/15] md:aspect-[3/1]">
           <div className="absolute inset-0 flex items-center">
             <div className="grid w-full h-full grid-cols-1 md:grid-cols-2">
               {/* Left side - Description */}
