@@ -1,9 +1,5 @@
-import Image from "next/image";
-import Link from "next/link";
 import { Metadata } from "next";
-import { ChevronLeft, Bookmark, Clock, BookOpen } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { MangaDetailClient } from "@/components/manga/MangaDetailClient";
 
 // Mock data: Trong thực tế nên thay thế bằng dữ liệu từ API
 const MANGA_DETAIL = {
@@ -66,147 +62,13 @@ export const generateMetadata = ({
   };
 };
 
-export default function MangaDetailPage({
+export default async function MangaDetailPage({
   params,
 }: {
   params: { id: string };
 }) {
-  // Trong thực tế, cần fetch dữ liệu truyện theo params.id
+  // Trong thực tế, fetch data ở đây
   const manga = MANGA_DETAIL;
 
-  return (
-    <div className="container py-8">
-      {/* Breadcrumb */}
-      <div className="flex items-center gap-2 mb-6 text-sm">
-        <Link href="/" className="text-muted-foreground hover:text-foreground">
-          Trang chủ
-        </Link>
-        <span className="text-muted-foreground">/</span>
-        <span className="font-medium truncate">{manga.title}</span>
-      </div>
-
-      {/* Manga info section */}
-      <div className="flex flex-col md:flex-row gap-8 mb-8">
-        <div className="md:w-1/3 lg:w-1/4">
-          <div className="relative aspect-[2/3] rounded-lg overflow-hidden shadow-md">
-            <Image
-              src={manga.coverImage}
-              alt={manga.title}
-              fill
-              sizes="(max-width: 768px) 100vw, 300px"
-              className="object-cover"
-              priority
-            />
-          </div>
-        </div>
-
-        <div className="flex-1">
-          <Button variant="ghost" size="sm" asChild className="mb-4">
-            <Link
-              href="/"
-              className="flex items-center gap-1 text-muted-foreground"
-            >
-              <ChevronLeft className="h-4 w-4" /> Quay lại
-            </Link>
-          </Button>
-
-          <h1 className="text-2xl md:text-3xl font-bold mb-2">{manga.title}</h1>
-
-          {manga.alternativeTitles.length > 0 && (
-            <p className="text-muted-foreground text-sm mb-4">
-              Tên khác: {manga.alternativeTitles.join(", ")}
-            </p>
-          )}
-
-          <div className="flex flex-wrap gap-2 mb-4">
-            {manga.genres.map((genre) => (
-              <Link
-                key={genre}
-                href={`/genres/${genre.toLowerCase().replace(" ", "-")}`}
-                className="bg-muted px-2.5 py-1 rounded-full text-xs font-medium hover:bg-primary/10"
-              >
-                {genre}
-              </Link>
-            ))}
-          </div>
-
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
-            <div>
-              <p className="text-sm text-muted-foreground">Tác giả</p>
-              <p className="font-medium">{manga.author}</p>
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground">Trạng thái</p>
-              <p className="font-medium">{manga.status}</p>
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground">Đánh giá</p>
-              <p className="font-medium">⭐ {manga.rating}/5.0</p>
-            </div>
-          </div>
-
-          <div className="flex flex-wrap gap-4 mb-6">
-            <div className="flex items-center gap-2 text-sm">
-              <BookOpen className="h-4 w-4 text-muted-foreground" />
-              <span>{manga.totalViews.toLocaleString()} lượt đọc</span>
-            </div>
-            <div className="flex items-center gap-2 text-sm">
-              <Bookmark className="h-4 w-4 text-muted-foreground" />
-              <span>{manga.totalBookmarks.toLocaleString()} đánh dấu</span>
-            </div>
-          </div>
-
-          <div className="flex flex-wrap gap-3 mt-6">
-            <Button asChild size="lg">
-              <Link href={`/manga/${manga.id}/${manga.chapters[0].number}`}>
-                Đọc chương mới nhất
-              </Link>
-            </Button>
-            <Button variant="outline" size="lg">
-              <Bookmark className="mr-2 h-4 w-4" /> Đánh dấu
-            </Button>
-          </div>
-        </div>
-      </div>
-
-      {/* Description */}
-      <div className="bg-muted/50 rounded-lg p-4 md:p-6 mb-8">
-        <h2 className="text-xl font-semibold mb-4">Giới thiệu</h2>
-        <p className="text-muted-foreground whitespace-pre-line">
-          {manga.description}
-        </p>
-      </div>
-
-      {/* Chapters */}
-      <Tabs defaultValue="chapters">
-        <TabsList className="mb-4">
-          <TabsTrigger value="chapters">Danh sách chương</TabsTrigger>
-        </TabsList>
-        <TabsContent value="chapters" className="mt-0">
-          <div className="bg-card rounded-lg border overflow-hidden">
-            <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x">
-              {manga.chapters.map((chapter, index) => (
-                <Link
-                  key={chapter.number}
-                  href={`/manga/${manga.id}/${chapter.number}`}
-                  className="p-4 hover:bg-accent transition-colors flex justify-between items-center"
-                >
-                  <div>
-                    <p className="font-medium">Chapter {chapter.number}</p>
-                    <p className="text-sm text-muted-foreground">
-                      {chapter.title}
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <Clock className="h-3 w-3" />
-                    <span>{chapter.releaseDate}</span>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
-        </TabsContent>
-      </Tabs>
-    </div>
-  );
+  return <MangaDetailClient manga={manga} />;
 }
