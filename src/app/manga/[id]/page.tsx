@@ -17,6 +17,11 @@ const MANGA_DETAIL = {
   totalViews: 10500000,
   totalBookmarks: 250000,
   chapters: [
+    ...Array.from({ length: 100 }, (_, i) => ({
+      number: (1212 - i).toString(),
+      title: `Chapter ${1212 - i}`,
+      releaseDate: new Date(2024, 0, i + 1).toISOString().split("T")[0],
+    })),
     { number: "1112", title: "Những người bạn", releaseDate: "2023-06-10" },
     {
       number: "1111",

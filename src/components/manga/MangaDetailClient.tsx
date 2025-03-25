@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useMemo, useEffect } from "react";
 import {
   ChevronLeft,
   Bookmark,
@@ -13,11 +13,17 @@ import {
   List,
   Star,
   Eye,
+  Search,
+  ChevronDown,
+  Loader2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Input } from "@/components/ui/input";
 import { ReadOptions } from "@/components/manga/ReadOptions";
 import { Badge } from "@/components/ui/badge";
+import { useIntersectionObserver } from "@/hooks/useIntersectionObserver";
+import { CommentSection } from "@/components/manga/CommentSection";
 
 interface Chapter {
   number: string;
@@ -42,6 +48,8 @@ interface MangaDetailClientProps {
   };
 }
 
+const CHAPTERS_PER_PAGE = 20;
+
 export function MangaDetailClient({ manga }: MangaDetailClientProps) {
   const [viewMode, setViewMode] = useState<"grid" | "list">(() => {
     if (typeof window !== "undefined") {
@@ -52,13 +60,52 @@ export function MangaDetailClient({ manga }: MangaDetailClientProps) {
     return "list";
   });
   const [sortAscending, setSortAscending] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [visibleChapters, setVisibleChapters] = useState(CHAPTERS_PER_PAGE);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const { ref: loadMoreRef, isIntersecting } = useIntersectionObserver();
 
-  // Sắp xếp danh sách chapter
-  const sortedChapters = [...manga.chapters].sort((a, b) => {
-    const aNum = parseInt(a.number);
-    const bNum = parseInt(b.number);
-    return sortAscending ? aNum - bNum : bNum - aNum;
-  });
+  // Lọc và sắp xếp chapters
+  const filteredAndSortedChapters = useMemo(() => {
+    let filtered = [...manga.chapters];
+
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter(
+        (chapter) =>
+          chapter.number.includes(query) ||
+          chapter.title.toLowerCase().includes(query)
+      );
+    }
+
+    return filtered.sort((a, b) => {
+      const aNum = parseInt(a.number);
+      const bNum = parseInt(b.number);
+      return sortAscending ? aNum - bNum : bNum - aNum;
+    });
+  }, [manga.chapters, searchQuery, sortAscending]);
+
+  // Load more chapters when scrolling to bottom
+  useEffect(() => {
+    if (
+      isIntersecting &&
+      !isLoadingMore &&
+      visibleChapters < filteredAndSortedChapters.length
+    ) {
+      setIsLoadingMore(true);
+      setTimeout(() => {
+        setVisibleChapters((prev) =>
+          Math.min(prev + CHAPTERS_PER_PAGE, filteredAndSortedChapters.length)
+        );
+        setIsLoadingMore(false);
+      }, 500);
+    }
+  }, [isIntersecting, filteredAndSortedChapters.length, isLoadingMore]);
+
+  // Reset visible chapters when search query changes
+  useEffect(() => {
+    setVisibleChapters(CHAPTERS_PER_PAGE);
+  }, [searchQuery, sortAscending]); // Thêm sortAscending để reset khi đổi thứ tự
 
   const handleViewModeChange = (mode: "grid" | "list") => {
     setViewMode(mode);
@@ -75,6 +122,22 @@ export function MangaDetailClient({ manga }: MangaDetailClientProps) {
     return num.toString();
   };
 
+  const handleLoadMore = () => {
+    if (!isLoadingMore) {
+      setIsLoadingMore(true);
+      setTimeout(() => {
+        setVisibleChapters((prev) =>
+          Math.min(prev + CHAPTERS_PER_PAGE, filteredAndSortedChapters.length)
+        );
+        setIsLoadingMore(false);
+      }, 500);
+    }
+  };
+
+  const displayedChapters = filteredAndSortedChapters.slice(0, visibleChapters);
+  const hasMoreChapters = visibleChapters < filteredAndSortedChapters.length;
+  const remainingChapters = filteredAndSortedChapters.length - visibleChapters;
+
   return (
     <div className="container py-8">
       {/* Breadcrumb */}
@@ -86,177 +149,209 @@ export function MangaDetailClient({ manga }: MangaDetailClientProps) {
         <span className="font-medium truncate">{manga.title}</span>
       </div>
 
-      {/* Manga info section */}
-      <div className="flex flex-col md:flex-row gap-8 mb-8">
-        <div className="md:w-1/3 lg:w-1/4">
-          <div className="relative aspect-[2/3] rounded-lg overflow-hidden shadow-md">
-            <Image
-              src={manga.coverImage}
-              alt={manga.title}
-              fill
-              sizes="(max-width: 768px) 100vw, 300px"
-              className="object-cover"
-              priority
-            />
-          </div>
-        </div>
-
-        <div className="flex-1">
-          <Button variant="ghost" size="sm" asChild className="mb-4">
-            <Link
-              href="/"
-              className="flex items-center gap-1 text-muted-foreground"
-            >
-              <ChevronLeft className="h-4 w-4" /> Quay lại
-            </Link>
-          </Button>
-
-          <h1 className="text-2xl md:text-3xl font-bold mb-2">{manga.title}</h1>
-
-          {manga.alternativeTitles.length > 0 && (
-            <p className="text-muted-foreground text-sm mb-4">
-              Tên khác: {manga.alternativeTitles.join(", ")}
-            </p>
-          )}
-
-          <div className="flex flex-wrap gap-2 mb-4">
-            {manga.genres.map((genre) => (
-              <Link
-                key={genre}
-                href={`/genres/${genre.toLowerCase().replace(" ", "-")}`}
-                className="bg-muted px-2.5 py-1 rounded-full text-xs font-medium hover:bg-primary/10"
-              >
-                {genre}
-              </Link>
-            ))}
-          </div>
-
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
-            <div>
-              <p className="text-sm text-muted-foreground">Tác giả</p>
-              <p className="font-medium">{manga.author}</p>
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr,400px] gap-8">
+        {/* Main content - Manga Info */}
+        <div className="space-y-6">
+          <div className="flex gap-6">
+            {/* Cover image */}
+            <div className="w-[180px] shrink-0">
+              <div className="relative aspect-[2/3] rounded-lg overflow-hidden shadow-md">
+                <Image
+                  src={manga.coverImage}
+                  alt={manga.title}
+                  fill
+                  sizes="180px"
+                  className="object-cover"
+                  priority
+                />
+              </div>
+              <Button variant="outline" className="w-full mt-3">
+                <Bookmark className="mr-2 h-4 w-4" /> Đánh dấu
+              </Button>
             </div>
-            <div>
-              <p className="text-sm text-muted-foreground">Trạng thái</p>
-              <p className="font-medium">{manga.status}</p>
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground">Đánh giá</p>
-              <p className="font-medium">⭐ {manga.rating}/5.0</p>
-            </div>
-          </div>
 
-          <div className="flex flex-wrap gap-4 mb-6">
-            <div className="flex items-center gap-2 text-sm">
-              <BookOpen className="h-4 w-4 text-muted-foreground" />
-              <span>{manga.totalViews.toLocaleString()} lượt đọc</span>
-            </div>
-            <div className="flex items-center gap-2 text-sm">
-              <Bookmark className="h-4 w-4 text-muted-foreground" />
-              <span>{manga.totalBookmarks.toLocaleString()} đánh dấu</span>
-            </div>
-          </div>
-
-          <div className="flex flex-wrap gap-3 mt-6">
-            <ReadOptions
-              mangaId={parseInt(manga.id)}
-              lastChapter={parseInt(manga.chapters[0].number)}
-              firstChapter={parseInt(
-                manga.chapters[manga.chapters.length - 1].number
+            {/* Info */}
+            <div className="flex-1 min-w-0">
+              <h1 className="text-2xl font-bold mb-2">{manga.title}</h1>
+              {manga.alternativeTitles.length > 0 && (
+                <p className="text-muted-foreground text-sm mb-4">
+                  Tên khác: {manga.alternativeTitles.join(", ")}
+                </p>
               )}
-            />
-            <Button variant="outline" size="lg">
-              <Bookmark className="mr-2 h-4 w-4" /> Đánh dấu
-            </Button>
+
+              <div className="grid gap-4 mb-4">
+                <div>
+                  <p className="text-sm text-muted-foreground">Tác giả</p>
+                  <p className="font-medium">{manga.author}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">Trạng thái</p>
+                  <p className="font-medium">{manga.status}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">Đánh giá</p>
+                  <p className="font-medium">⭐ {manga.rating}/5.0</p>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap gap-4 mb-4">
+                <div className="flex items-center gap-2 text-sm">
+                  <BookOpen className="h-4 w-4 text-muted-foreground" />
+                  <span>{manga.totalViews.toLocaleString()} lượt đọc</span>
+                </div>
+                <div className="flex items-center gap-2 text-sm">
+                  <Bookmark className="h-4 w-4 text-muted-foreground" />
+                  <span>{manga.totalBookmarks.toLocaleString()} đánh dấu</span>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap gap-2 mb-4">
+                {manga.genres.map((genre) => (
+                  <Link
+                    key={genre}
+                    href={`/genres/${genre.toLowerCase().replace(" ", "-")}`}
+                    className="bg-muted px-2.5 py-1 rounded-full text-xs font-medium hover:bg-primary/10"
+                  >
+                    {genre}
+                  </Link>
+                ))}
+              </div>
+
+              <ReadOptions
+                mangaId={parseInt(manga.id)}
+                lastChapter={parseInt(manga.chapters[0].number)}
+                firstChapter={parseInt(
+                  manga.chapters[manga.chapters.length - 1].number
+                )}
+              />
+            </div>
+          </div>
+
+          {/* Description */}
+          <div className="bg-muted/50 rounded-lg p-4">
+            <h2 className="text-lg font-semibold mb-2">Giới thiệu</h2>
+            <p className="text-muted-foreground whitespace-pre-line">
+              {manga.description}
+            </p>
+          </div>
+
+          {/* Comments */}
+          <div className="bg-muted/50 rounded-lg p-4">
+            <CommentSection />
           </div>
         </div>
-      </div>
 
-      {/* Description */}
-      <div className="bg-muted/50 rounded-lg p-4 md:p-6 mb-8">
-        <h2 className="text-xl font-semibold mb-4">Giới thiệu</h2>
-        <p className="text-muted-foreground whitespace-pre-line">
-          {manga.description}
-        </p>
-      </div>
+        {/* Sidebar - Chapter list */}
+        <div className="space-y-6">
+          <div className="border rounded-lg sticky top-4">
+            <div className="p-4 border-b flex flex-col sm:flex-row gap-4">
+              <div className="flex-1">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    type="text"
+                    placeholder="Tìm kiếm chapter..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-9"
+                  />
+                </div>
+              </div>
+              <div className="flex items-center gap-2 justify-end">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => setSortAscending(!sortAscending)}
+                  title={
+                    sortAscending ? "Sắp xếp giảm dần" : "Sắp xếp tăng dần"
+                  }
+                >
+                  <ArrowUpDown className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant={viewMode === "grid" ? "default" : "outline"}
+                  size="icon"
+                  onClick={() => handleViewModeChange("grid")}
+                >
+                  <Grid2x2 className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant={viewMode === "list" ? "default" : "outline"}
+                  size="icon"
+                  onClick={() => handleViewModeChange("list")}
+                >
+                  <List className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
 
-      {/* Chapters section */}
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h2 className="text-xl font-semibold">Danh sách chương</h2>
-          <div className="flex items-center gap-2">
-            <Button
-              variant={viewMode === "grid" ? "default" : "outline"}
-              size="icon"
-              onClick={() => handleViewModeChange("grid")}
-              title="Hiển thị dạng lưới"
-            >
-              <Grid2x2 className="h-4 w-4" />
-            </Button>
-            <Button
-              variant={viewMode === "list" ? "default" : "outline"}
-              size="icon"
-              onClick={() => handleViewModeChange("list")}
-              title="Hiển thị dạng danh sách"
-            >
-              <List className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setSortAscending(!sortAscending)}
-              title={sortAscending ? "Sắp xếp giảm dần" : "Sắp xếp tăng dần"}
-            >
-              <ArrowUpDown className="h-4 w-4" />
-            </Button>
+            <div className="h-[calc(100vh-200px)] overflow-y-auto">
+              {viewMode === "grid" ? (
+                <div className="grid grid-cols-2 gap-4 p-4">
+                  {displayedChapters.map((chapter) => (
+                    <Link
+                      href={`/manga/${manga.id}/${chapter.number}`}
+                      key={chapter.number}
+                      className="p-4 rounded-lg border hover:bg-accent transition-colors"
+                    >
+                      <div className="font-semibold">
+                        Chapter {chapter.number}
+                      </div>
+                      <div className="text-sm text-muted-foreground">
+                        {chapter.title}
+                      </div>
+                      <div className="text-xs text-muted-foreground mt-1">
+                        {chapter.releaseDate}
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              ) : (
+                <div className="divide-y">
+                  {displayedChapters.map((chapter) => (
+                    <Link
+                      href={`/manga/${manga.id}/${chapter.number}`}
+                      key={chapter.number}
+                      className="flex items-center justify-between p-4 hover:bg-accent transition-colors"
+                    >
+                      <div>
+                        <div className="font-semibold">
+                          Chapter {chapter.number}
+                        </div>
+                        <div className="text-sm text-muted-foreground">
+                          {chapter.title}
+                        </div>
+                      </div>
+                      <div className="text-sm text-muted-foreground">
+                        {chapter.releaseDate}
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {hasMoreChapters && (
+              <div
+                ref={loadMoreRef}
+                className="p-4 flex justify-center border-t"
+              >
+                {isLoadingMore ? (
+                  <Loader2 className="h-6 w-6 animate-spin" />
+                ) : (
+                  <Button
+                    variant="ghost"
+                    onClick={handleLoadMore}
+                    className="w-full"
+                  >
+                    Xem thêm {remainingChapters} chapter
+                    <ChevronDown className="ml-2 h-4 w-4" />
+                  </Button>
+                )}
+              </div>
+            )}
           </div>
         </div>
-
-        {viewMode === "grid" ? (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-            {sortedChapters.map((chapter) => (
-              <Link
-                key={chapter.number}
-                href={`/manga/${manga.id}/${chapter.number}`}
-                className="group bg-muted hover:bg-accent rounded-lg p-4 transition-colors"
-              >
-                <div className="font-medium group-hover:text-accent-foreground">
-                  Chapter {chapter.number}
-                </div>
-                <div className="text-sm text-muted-foreground line-clamp-1 group-hover:text-accent-foreground">
-                  {chapter.title}
-                </div>
-                <div className="text-xs text-muted-foreground mt-2 flex items-center gap-1">
-                  <Clock className="w-3 h-3" />
-                  {new Date(chapter.releaseDate).toLocaleDateString("vi-VN")}
-                </div>
-              </Link>
-            ))}
-          </div>
-        ) : (
-          <div className="space-y-2">
-            {sortedChapters.map((chapter) => (
-              <Link
-                key={chapter.number}
-                href={`/manga/${manga.id}/${chapter.number}`}
-                className="group flex items-center justify-between rounded-lg p-4 hover:bg-accent transition-colors"
-              >
-                <div className="space-y-1">
-                  <div className="font-medium group-hover:text-accent-foreground">
-                    Chapter {chapter.number}
-                  </div>
-                  <div className="text-sm text-muted-foreground group-hover:text-accent-foreground">
-                    {chapter.title}
-                  </div>
-                </div>
-                <div className="text-sm text-muted-foreground flex items-center gap-2">
-                  <Clock className="w-4 h-4" />
-                  {new Date(chapter.releaseDate).toLocaleDateString("vi-VN")}
-                </div>
-              </Link>
-            ))}
-          </div>
-        )}
       </div>
     </div>
   );
