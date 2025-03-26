@@ -162,7 +162,7 @@ export function PopularSection() {
                   ease: "easeOut",
                 }}
               >
-                <Link href={`/manga/manga-${manga.id}`} className="group block">
+                <Link href={`/manga/${manga.id}`} className="group block">
                   <div className="relative aspect-[3/4] rounded-lg overflow-hidden bg-muted mb-2">
                     <Image
                       src={manga.image}

@@ -24,6 +24,7 @@ import { ReadOptions } from "@/components/manga/ReadOptions";
 import { Badge } from "@/components/ui/badge";
 import { useIntersectionObserver } from "@/hooks/useIntersectionObserver";
 import { CommentSection } from "@/components/manga/CommentSection";
+import { RatingStars } from "@/components/manga/RatingStars";
 
 interface Chapter {
   number: string;
@@ -138,6 +139,11 @@ export function MangaDetailClient({ manga }: MangaDetailClientProps) {
   const hasMoreChapters = visibleChapters < filteredAndSortedChapters.length;
   const remainingChapters = filteredAndSortedChapters.length - visibleChapters;
 
+  const handleRate = async (rating: number) => {
+    // TODO: Gửi rating lên server
+    console.log("Rated:", rating);
+  };
+
   return (
     <div className="container py-8">
       {/* Breadcrumb */}
@@ -190,18 +196,27 @@ export function MangaDetailClient({ manga }: MangaDetailClientProps) {
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Đánh giá</p>
-                  <p className="font-medium">⭐ {manga.rating}/5.0</p>
+                  <div className="flex items-center gap-4">
+                    <RatingStars
+                      initialRating={manga.rating}
+                      onRate={handleRate}
+                      size="lg"
+                    />
+                    <span className="text-sm text-muted-foreground">
+                      ({formatNumber(manga.totalViews)} lượt đánh giá)
+                    </span>
+                  </div>
                 </div>
               </div>
 
               <div className="flex flex-wrap gap-4 mb-4">
                 <div className="flex items-center gap-2 text-sm">
-                  <BookOpen className="h-4 w-4 text-muted-foreground" />
-                  <span>{manga.totalViews.toLocaleString()} lượt đọc</span>
+                  <Eye className="h-4 w-4 text-muted-foreground" />
+                  <span>{formatNumber(manga.totalViews)} lượt xem</span>
                 </div>
                 <div className="flex items-center gap-2 text-sm">
                   <Bookmark className="h-4 w-4 text-muted-foreground" />
-                  <span>{manga.totalBookmarks.toLocaleString()} đánh dấu</span>
+                  <span>{formatNumber(manga.totalBookmarks)} đánh dấu</span>
                 </div>
               </div>
 
