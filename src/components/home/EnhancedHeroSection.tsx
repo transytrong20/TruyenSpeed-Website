@@ -29,9 +29,8 @@ export function EnhancedHeroSection() {
     const fetchFeaturedManga = async () => {
       try {
         setIsLoading(true);
-        const response = await fetch(
-          "https://localhost:44308/app/data/comic/banner"
-        );
+        const url = process.env.NEXT_PUBLIC_API_BASE_URL;
+        const response = await fetch(`${url}comic/banner`);
         if (!response.ok) {
           throw new Error("Failed to fetch featured manga");
         }

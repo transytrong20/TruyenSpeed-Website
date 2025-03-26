@@ -5,89 +5,8 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { ChevronRight } from "lucide-react";
 import { useState, useEffect } from "react";
-
-// const latestManga = [
-//   {
-//     id: 1,
-//     title: "Tên truyện rất dài và thú vị 1",
-//     image:
-//       "http://192.168.1.63:9000/truyenspeed/ComicBookCover/menh-luan-chi-chu-lam-ke-bien-di-giang-xuong-nhan-gian.webp",
-//     chapter: 245,
-//     timeAgo: "2 giờ trước",
-//     views: 1234,
-//     genres: ["Hành động", "Phiêu lưu"],
-//   },
-//   {
-//     id: 2,
-//     title: "Tên truyện rất dài và thú vị 2",
-//     image:
-//       "http://192.168.1.63:9000/truyenspeed/ComicBookCover/menh-luan-chi-chu-lam-ke-bien-di-giang-xuong-nhan-gian.webp",
-//     chapter: 123,
-//     timeAgo: "3 giờ trước",
-//     views: 856,
-//     genres: ["Tình cảm", "Học đường"],
-//   },
-//   {
-//     id: 3,
-//     title: "Tên truyện rất dài và thú vị 3",
-//     image:
-//       "http://192.168.1.63:9000/truyenspeed/ComicBookCover/menh-luan-chi-chu-lam-ke-bien-di-giang-xuong-nhan-gian.webp",
-//     chapter: 56,
-//     timeAgo: "5 giờ trước",
-//     views: 945,
-//     genres: ["Kinh dị", "Giả tưởng"],
-//   },
-//   {
-//     id: 4,
-//     title: "Tên truyện rất dài và thú vị 4",
-//     image:
-//       "http://192.168.1.63:9000/truyenspeed/ComicBookCover/menh-luan-chi-chu-lam-ke-bien-di-giang-xuong-nhan-gian.webp",
-//     chapter: 89,
-//     timeAgo: "6 giờ trước",
-//     views: 723,
-//     genres: ["Hài hước", "Drama"],
-//   },
-//   {
-//     id: 5,
-//     title: "Tên truyện rất dài và thú vị 5",
-//     image:
-//       "http://192.168.1.63:9000/truyenspeed/ComicBookCover/menh-luan-chi-chu-lam-ke-bien-di-giang-xuong-nhan-gian.webp",
-//     chapter: 34,
-//     timeAgo: "8 giờ trước",
-//     views: 432,
-//     genres: ["Thể thao", "Học đường"],
-//   },
-// ];
-
-interface Chapter {
-  chapterName: string;
-}
-
-interface Tag {
-  tagName: string;
-}
-
-interface Manga {
-  comicName: string;
-  otherName: string;
-  image: string;
-  creator: string;
-  status: string;
-  introduction: string;
-  views: number;
-  releaseDate: string;
-  listChapters: Chapter[];
-  listTags: Tag[];
-}
-
-const formatDate = (isoDate: string): string => {
-  const date = new Date(isoDate);
-  const day = date.getDate().toString().padStart(2, "0");
-  const month = (date.getMonth() + 1).toString().padStart(2, "0");
-  const year = date.getFullYear();
-  return `${day}/${month}/${year}`;
-};
-
+import { Manga } from "@/types/manga";
+import { formatDate } from "@/utils/dateUtils";
 export function LatestSection() {
   const [latestManga, setLatestManga] = useState<Manga[]>([]);
 
@@ -95,9 +14,8 @@ export function LatestSection() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(
-          "https://localhost:44308/app/data/comic/truyen-moi"
-        );
+        const url = process.env.NEXT_PUBLIC_API_BASE_URL;
+        const response = await fetch(`${url}comic/truyen-moi`);
         const data: Manga[] = await response.json();
         setLatestManga(data);
       } catch (error) {
@@ -130,7 +48,7 @@ export function LatestSection() {
           {latestManga.map((manga) => (
             <Link
               key={manga.otherName}
-              href={`/manga/manga-${manga.otherName}`}
+              href={`/manga/${manga.otherName}`}
               className="group flex gap-3 p-2 rounded-lg hover:bg-muted/50 transition-colors"
             >
               <div className="relative aspect-[3/4] w-16 md:w-20 shrink-0 overflow-hidden rounded-md">
