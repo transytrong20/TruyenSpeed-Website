@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
@@ -10,128 +10,18 @@ import { cn } from "@/lib/utils";
 
 type TimeRange = "day" | "week" | "month";
 
-const popularManga = [
-  {
-    id: 1,
-    title: "Tên truyện rất dài và thú vị 1",
-    image:
-      "http://192.168.1.63:9000/truyenspeed/ComicBookCover/menh-luan-chi-chu-lam-ke-bien-di-giang-xuong-nhan-gian.webp",
-    chapter: 245,
-    rating: 4.8,
-    views: "1.2M",
-    status: "Đang tiến hành",
-  },
-  {
-    id: 2,
-    title: "Tên truyện rất dài và thú vị 2",
-    image:
-      "http://192.168.1.63:9000/truyenspeed/ComicBookCover/menh-luan-chi-chu-lam-ke-bien-di-giang-xuong-nhan-gian.webp",
-    chapter: 123,
-    rating: 4.5,
-    views: "856K",
-    status: "Hoàn thành",
-  },
-  {
-    id: 3,
-    title: "Tên truyện rất dài và thú vị 3",
-    image:
-      "http://192.168.1.63:9000/truyenspeed/ComicBookCover/menh-luan-chi-chu-lam-ke-bien-di-giang-xuong-nhan-gian.webp",
-    chapter: 56,
-    rating: 4.7,
-    views: "945K",
-    status: "Đang tiến hành",
-  },
-  {
-    id: 4,
-    title: "Tên truyện rất dài và thú vị 4",
-    image:
-      "http://192.168.1.63:9000/truyenspeed/ComicBookCover/menh-luan-chi-chu-lam-ke-bien-di-giang-xuong-nhan-gian.webp",
-    chapter: 89,
-    rating: 4.3,
-    views: "723K",
-    status: "Tạm ngưng",
-  },
-  {
-    id: 5,
-    title: "Tên truyện rất dài và thú vị 5",
-    image:
-      "http://192.168.1.63:9000/truyenspeed/ComicBookCover/menh-luan-chi-chu-lam-ke-bien-di-giang-xuong-nhan-gian.webp",
-    chapter: 34,
-    rating: 4.6,
-    views: "432K",
-    status: "Đang tiến hành",
-  },
-  {
-    id: 6,
-    title: "Tên truyện rất dài và thú vị 6",
-    image:
-      "http://192.168.1.63:9000/truyenspeed/ComicBookCover/menh-luan-chi-chu-lam-ke-bien-di-giang-xuong-nhan-gian.webp",
-    chapter: 167,
-    rating: 4.4,
-    views: "678K",
-    status: "Đang tiến hành",
-  },
-  {
-    id: 7,
-    title: "Tên truyện rất dài và thú vị 7",
-    image:
-      "http://192.168.1.63:9000/truyenspeed/ComicBookCover/menh-luan-chi-chu-lam-ke-bien-di-giang-xuong-nhan-gian.webp",
-    chapter: 245,
-    rating: 4.8,
-    views: "1.2M",
-    status: "Đang tiến hành",
-  },
-  {
-    id: 8,
-    title: "Tên truyện rất dài và thú vị 8",
-    image:
-      "http://192.168.1.63:9000/truyenspeed/ComicBookCover/menh-luan-chi-chu-lam-ke-bien-di-giang-xuong-nhan-gian.webp",
-    chapter: 123,
-    rating: 4.5,
-    views: "856K",
-    status: "Hoàn thành",
-  },
-  {
-    id: 9,
-    title: "Tên truyện rất dài và thú vị 9",
-    image:
-      "http://192.168.1.63:9000/truyenspeed/ComicBookCover/menh-luan-chi-chu-lam-ke-bien-di-giang-xuong-nhan-gian.webp",
-    chapter: 56,
-    rating: 4.7,
-    views: "945K",
-    status: "Đang tiến hành",
-  },
-  {
-    id: 10,
-    title: "Tên truyện rất dài và thú vị 10",
-    image:
-      "http://192.168.1.63:9000/truyenspeed/ComicBookCover/menh-luan-chi-chu-lam-ke-bien-di-giang-xuong-nhan-gian.webp",
-    chapter: 89,
-    rating: 4.3,
-    views: "723K",
-    status: "Tạm ngưng",
-  },
-  {
-    id: 11,
-    title: "Tên truyện rất dài và thú vị 11",
-    image:
-      "http://192.168.1.63:9000/truyenspeed/ComicBookCover/menh-luan-chi-chu-lam-ke-bien-di-giang-xuong-nhan-gian.webp",
-    chapter: 34,
-    rating: 4.6,
-    views: "432K",
-    status: "Đang tiến hành",
-  },
-  {
-    id: 12,
-    title: "Tên truyện rất dài và thú vị 12",
-    image:
-      "http://192.168.1.63:9000/truyenspeed/ComicBookCover/menh-luan-chi-chu-lam-ke-bien-di-giang-xuong-nhan-gian.webp",
-    chapter: 167,
-    rating: 4.4,
-    views: "678K",
-    status: "Đang tiến hành",
-  },
-];
+// Interface khớp với dữ liệu từ API
+interface Manga {
+  comicName: string;
+  otherName: string;
+  image: string;
+  creator: string;
+  status: string;
+  introduction: string;
+  views: number;
+  listChapters: { chapterName: string }[];
+  listTags: string[];
+}
 
 const timeRangeButtons = [
   { value: "day", label: "Hàng ngày" },
@@ -142,6 +32,32 @@ const timeRangeButtons = [
 export function PopularSection() {
   const [timeRange, setTimeRange] = useState<TimeRange>("day");
   const [isChanging, setIsChanging] = useState(false);
+  const [popularManga, setPopularManga] = useState<Manga[]>([]);
+  const [loading, setLoading] = useState(true); // Thêm trạng thái loading
+
+  // Gọi API khi timeRange thay đổi
+  useEffect(() => {
+    const fetchPopularManga = async () => {
+      setLoading(true);
+      try {
+        const response = await fetch(
+          `https://localhost:44308/app/data/comic/truyen-pho-bien?timeRange=${timeRange}`
+        );
+        if (!response.ok) {
+          throw new Error("Failed to fetch popular manga");
+        }
+        const data: Manga[] = await response.json();
+        setPopularManga(data);
+      } catch (error) {
+        console.error("Error fetching popular manga:", error);
+        setPopularManga([]); // Trả về rỗng nếu lỗi
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPopularManga();
+  }, [timeRange]);
 
   const handleTimeRangeChange = (value: TimeRange) => {
     if (value === timeRange) return;
@@ -211,52 +127,67 @@ export function PopularSection() {
             transition={{ duration: 0.3, ease: "easeOut" }}
             className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4"
           >
-            {popularManga.map((manga, index) => (
-              <motion.div
-                key={manga.id}
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{
-                  duration: 0.2,
-                  delay: index * 0.05,
-                  ease: "easeOut",
-                }}
-              >
-                <Link href={`/manga/${manga.id}`} className="group block">
-                  <div className="relative aspect-[3/4] rounded-lg overflow-hidden bg-muted mb-2">
-                    <Image
-                      src={manga.image}
-                      alt={manga.title}
-                      fill
-                      className="object-cover transition-transform duration-300 group-hover:scale-105"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                    <div className="absolute top-2 right-2">
-                      <div className="flex items-center gap-1 bg-black/50 backdrop-blur-sm px-1.5 py-0.5 rounded text-white text-xs">
-                        <span className="text-yellow-400">★</span>
-                        {manga.rating}
+            {loading ? (
+              // Hiển thị loading state
+              Array.from({ length: 12 }).map((_, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.2, delay: index * 0.05 }}
+                  className="aspect-[3/4] rounded-lg bg-muted animate-pulse"
+                />
+              ))
+            ) : popularManga.length > 0 ? (
+              popularManga.map((manga, index) => (
+                <motion.div
+                  key={manga.otherName} // Dùng otherName làm key vì không có id
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{
+                    duration: 0.2,
+                    delay: index * 0.05,
+                    ease: "easeOut",
+                  }}
+                >
+                  <Link
+                    href={`/manga/${manga.otherName}`}
+                    className="group block"
+                  >
+                    <div className="relative aspect-[3/4] rounded-lg overflow-hidden bg-muted mb-2">
+                      <Image
+                        src={manga.image}
+                        alt={manga.comicName}
+                        fill
+                        className="object-cover transition-transform duration-300 group-hover:scale-105"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                      {/* Không có rating trong API, bỏ hoặc thêm mặc định */}
+                      <div className="absolute bottom-0 left-0 right-0 p-2">
+                        <div className="flex items-center justify-between text-[10px] text-white/90">
+                          <span className="bg-primary/90 px-1.5 py-0.5 rounded-sm">
+                            {manga.status}
+                          </span>
+                          <span>{manga.views} lượt xem</span>
+                        </div>
                       </div>
                     </div>
-                    <div className="absolute bottom-0 left-0 right-0 p-2">
-                      <div className="flex items-center justify-between text-[10px] text-white/90">
-                        <span className="bg-primary/90 px-1.5 py-0.5 rounded-sm">
-                          {manga.status}
-                        </span>
-                        <span>{manga.views} lượt xem</span>
-                      </div>
+                    <div className="space-y-1">
+                      <h3 className="font-medium text-sm line-clamp-2 leading-tight group-hover:text-primary transition-colors">
+                        {manga.comicName}
+                      </h3>
+                      <p className="text-xs text-muted-foreground">
+                        {manga.listChapters[0]?.chapterName || "Chưa có chương"}
+                      </p>
                     </div>
-                  </div>
-                  <div className="space-y-1">
-                    <h3 className="font-medium text-sm line-clamp-2 leading-tight group-hover:text-primary transition-colors">
-                      {manga.title}
-                    </h3>
-                    <p className="text-xs text-muted-foreground">
-                      Chương {manga.chapter}
-                    </p>
-                  </div>
-                </Link>
-              </motion.div>
-            ))}
+                  </Link>
+                </motion.div>
+              ))
+            ) : (
+              <div className="col-span-full text-center text-muted-foreground">
+                Không có dữ liệu truyện phổ biến
+              </div>
+            )}
           </motion.div>
         </AnimatePresence>
       </div>
