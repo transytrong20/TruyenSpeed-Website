@@ -86,7 +86,38 @@ export function EnhancedHeroSection() {
   if (isLoading) {
     return (
       <section className="relative bg-background py-8 overflow-hidden">
-        <div className="container">Loading...</div>
+        <div className="container">
+          <div className="relative overflow-hidden rounded-lg aspect-[21/15] md:aspect-[3/1] bg-muted">
+            <div className="absolute inset-0 bg-skeleton-gradient animate-shimmer" />
+            <div className="grid w-full h-full grid-cols-1 md:grid-cols-2">
+              {/* Left side - Description skeleton */}
+              <div className="relative z-10 h-full flex flex-col justify-center p-6 md:p-12 space-y-4">
+                {/* Title skeleton */}
+                <div className="h-8 md:h-12 w-3/4 bg-muted-foreground/20 rounded-lg animate-pulse" />
+
+                {/* Description skeleton */}
+                <div className="space-y-2">
+                  <div className="h-4 w-full bg-muted-foreground/20 rounded animate-pulse" />
+                  <div className="h-4 w-5/6 bg-muted-foreground/20 rounded animate-pulse" />
+                  <div className="h-4 w-4/6 bg-muted-foreground/20 rounded animate-pulse" />
+                </div>
+
+                {/* Buttons skeleton */}
+                <div className="flex gap-3 pt-4">
+                  <div className="h-10 w-28 bg-muted-foreground/20 rounded-md animate-pulse" />
+                  <div className="h-10 w-36 bg-muted-foreground/20 rounded-md animate-pulse" />
+                </div>
+              </div>
+
+              {/* Right side - Book Effect skeleton */}
+              <div className="relative h-full hidden md:flex items-center justify-center p-8">
+                <div className="w-[250px] h-[350px] bg-muted-foreground/20 rounded-lg animate-pulse">
+                  <div className="absolute inset-0 bg-skeleton-gradient animate-shimmer" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </section>
     );
   }
