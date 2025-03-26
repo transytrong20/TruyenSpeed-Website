@@ -71,6 +71,66 @@ const popularManga = [
     views: "678K",
     status: "Đang tiến hành",
   },
+  {
+    id: 7,
+    title: "Tên truyện rất dài và thú vị 7",
+    image:
+      "http://192.168.1.63:9000/truyenspeed/ComicBookCover/menh-luan-chi-chu-lam-ke-bien-di-giang-xuong-nhan-gian.webp",
+    chapter: 245,
+    rating: 4.8,
+    views: "1.2M",
+    status: "Đang tiến hành",
+  },
+  {
+    id: 8,
+    title: "Tên truyện rất dài và thú vị 8",
+    image:
+      "http://192.168.1.63:9000/truyenspeed/ComicBookCover/menh-luan-chi-chu-lam-ke-bien-di-giang-xuong-nhan-gian.webp",
+    chapter: 123,
+    rating: 4.5,
+    views: "856K",
+    status: "Hoàn thành",
+  },
+  {
+    id: 9,
+    title: "Tên truyện rất dài và thú vị 9",
+    image:
+      "http://192.168.1.63:9000/truyenspeed/ComicBookCover/menh-luan-chi-chu-lam-ke-bien-di-giang-xuong-nhan-gian.webp",
+    chapter: 56,
+    rating: 4.7,
+    views: "945K",
+    status: "Đang tiến hành",
+  },
+  {
+    id: 10,
+    title: "Tên truyện rất dài và thú vị 10",
+    image:
+      "http://192.168.1.63:9000/truyenspeed/ComicBookCover/menh-luan-chi-chu-lam-ke-bien-di-giang-xuong-nhan-gian.webp",
+    chapter: 89,
+    rating: 4.3,
+    views: "723K",
+    status: "Tạm ngưng",
+  },
+  {
+    id: 11,
+    title: "Tên truyện rất dài và thú vị 11",
+    image:
+      "http://192.168.1.63:9000/truyenspeed/ComicBookCover/menh-luan-chi-chu-lam-ke-bien-di-giang-xuong-nhan-gian.webp",
+    chapter: 34,
+    rating: 4.6,
+    views: "432K",
+    status: "Đang tiến hành",
+  },
+  {
+    id: 12,
+    title: "Tên truyện rất dài và thú vị 12",
+    image:
+      "http://192.168.1.63:9000/truyenspeed/ComicBookCover/menh-luan-chi-chu-lam-ke-bien-di-giang-xuong-nhan-gian.webp",
+    chapter: 167,
+    rating: 4.4,
+    views: "678K",
+    status: "Đang tiến hành",
+  },
 ];
 
 const timeRangeButtons = [
