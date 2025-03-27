@@ -33,95 +33,103 @@ interface Chapter {
 }
 
 interface MangaDetailClientProps {
-  slug: string; // Nhận slug từ params
+  manga: {
+    id: string;
+    title: string;
+    alternativeTitles: string[];
+    description: string;
+    genres: string[];
+    author: string;
+    status: string;
+    coverImage: string;
+    rating: number;
+    totalViews: number;
+    totalBookmarks: number;
+    chapters: Chapter[];
+  };
+  slug: string;
 }
 
 const CHAPTERS_PER_PAGE = 20;
 
-export function MangaDetailClient({ slug }: MangaDetailClientProps) {
-  const [manga, setManga] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  const [viewMode, setViewMode] = useState<"grid" | "list">(() => {
-    if (typeof window !== "undefined") {
-      return (
-        (localStorage.getItem("chapterViewMode") as "grid" | "list") || "list"
-      );
-    }
-    return "list";
-  });
+export function MangaDetailClient({
+  manga: initialManga,
+  slug,
+}: MangaDetailClientProps) {
+  const [manga, setManga] = useState(initialManga);
+  const [viewMode, setViewMode] = useState<"grid" | "list">("list"); // Giá trị mặc định ban đầu
   const [sortAscending, setSortAscending] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [visibleChapters, setVisibleChapters] = useState(CHAPTERS_PER_PAGE);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const { ref: loadMoreRef, isIntersecting } = useIntersectionObserver();
 
-  // Lấy username từ localStorage
+  // Lấy viewMode từ localStorage sau khi mount
   useEffect(() => {
-    const fetchManga = async () => {
-      setLoading(true);
-      let username = "guest";
+    const savedViewMode = localStorage.getItem("chapterViewMode") as
+      | "grid"
+      | "list";
+    if (savedViewMode) {
+      setViewMode(savedViewMode);
+    }
+  }, []);
 
-      if (typeof window !== "undefined") {
-        const userData = localStorage.getItem("user");
-        const user = userData ? JSON.parse(userData) : null;
-        username = user?.username || "guest";
-      }
+  // Fetch lại dữ liệu nếu username từ localStorage khác "guest"
+  useEffect(() => {
+    const updateMangaData = async () => {
+      const userData = localStorage.getItem("user");
+      const user = userData ? JSON.parse(userData) : null;
+      const username = user?.username || "guest";
 
-      const url = `https://localhost:44308/app/data/comic/thong-tin-truyen?slug=${slug}&username=${username}`;
-      try {
-        const response = await fetch(url, {
-          method: "GET",
-          headers: {
-            accept: "*/*",
-          },
-        });
+      if (username !== "guest") {
+        const url = `https://localhost:44308/app/data/comic/thong-tin-truyen?slug=${slug}&username=${username}`;
+        try {
+          const response = await fetch(url, {
+            method: "GET",
+            headers: {
+              accept: "*/*",
+            },
+          });
 
-        if (!response.ok) {
-          throw new Error("Failed to fetch manga detail");
+          if (!response.ok) {
+            throw new Error("Failed to fetch updated manga detail");
+          }
+
+          const rawManga = await response.json();
+          const updatedManga = {
+            id: slug,
+            title: rawManga.comicName,
+            alternativeTitles: rawManga.alternativeTitles
+              ? rawManga.alternativeTitles.split(", ")
+              : [rawManga.otherName],
+            description: rawManga.introduction || "Đang cập nhật",
+            genres: rawManga.listTags.map(
+              (tag: { tagName: string }) => tag.tagName
+            ),
+            author: rawManga.creator || "Đang cập nhật",
+            status: rawManga.status || "Đang cập nhật",
+            coverImage: rawManga.image,
+            rating: rawManga.vote || 0,
+            totalViews: rawManga.views || 0,
+            totalBookmarks: rawManga.bookmarks || 0,
+            chapters: rawManga.listChapters.map((chapter: any) => ({
+              number: chapter.chapterName.replace("Chapter ", ""),
+              title: chapter.title,
+              releaseDate: chapter.releaseDate.split("T")[0],
+            })),
+          };
+          setManga(updatedManga);
+        } catch (error) {
+          console.error("Error updating manga detail:", error);
         }
-
-        const rawManga = await response.json();
-
-        // Chuyển đổi dữ liệu
-        const mangaData = {
-          id: slug,
-          title: rawManga.comicName,
-          alternativeTitles: rawManga.alternativeTitles
-            ? rawManga.alternativeTitles.split(", ")
-            : [rawManga.otherName],
-          description: rawManga.introduction || "Đang cập nhật",
-          genres: rawManga.listTags.map(
-            (tag: { tagName: string }) => tag.tagName
-          ),
-          author: rawManga.creator || "Đang cập nhật",
-          status: rawManga.status || "Đang cập nhật",
-          coverImage: rawManga.image,
-          rating: rawManga.vote || 0,
-          totalViews: rawManga.views || 0,
-          totalBookmarks: rawManga.bookmarks || 0,
-          chapters: rawManga.listChapters.map((chapter: any) => ({
-            number: chapter.chapterName.replace("Chapter ", ""),
-            title: chapter.title,
-            releaseDate: chapter.releaseDate.split("T")[0],
-          })),
-        };
-
-        setManga(mangaData);
-      } catch (err) {
-        setError("Không thể tải thông tin truyện. Vui lòng thử lại sau.");
-      } finally {
-        setLoading(false);
       }
     };
 
-    fetchManga();
+    updateMangaData();
   }, [slug]);
 
   // Lọc và sắp xếp chapters
   const filteredAndSortedChapters = useMemo(() => {
-    if (!manga?.chapters) return [];
     let filtered = [...manga.chapters];
 
     if (searchQuery) {
@@ -138,14 +146,12 @@ export function MangaDetailClient({ slug }: MangaDetailClientProps) {
       const bNum = parseInt(b.number);
       return sortAscending ? aNum - bNum : bNum - aNum;
     });
-  }, [manga?.chapters, searchQuery, sortAscending]);
+  }, [manga.chapters, searchQuery, sortAscending]);
 
-  // Các logic khác giữ nguyên, chỉ cần kiểm tra manga tồn tại
   useEffect(() => {
     if (
       isIntersecting &&
       !isLoadingMore &&
-      manga &&
       visibleChapters < filteredAndSortedChapters.length
     ) {
       setIsLoadingMore(true);
@@ -192,18 +198,6 @@ export function MangaDetailClient({ slug }: MangaDetailClientProps) {
   const handleRate = async (rating: number) => {
     console.log("Rated:", rating);
   };
-
-  if (loading) {
-    return (
-      <div className="container py-8 flex justify-center">
-        <Loader2 className="h-8 w-8 animate-spin" />
-      </div>
-    );
-  }
-
-  if (error) {
-    return <div className="container py-8 text-center">{error}</div>;
-  }
 
   return (
     <div className="container py-8">
@@ -282,7 +276,7 @@ export function MangaDetailClient({ slug }: MangaDetailClientProps) {
               </div>
 
               <div className="flex flex-wrap gap-2 mb-4">
-                {manga.genres.map((genre: string) => (
+                {manga.genres.map((genre) => (
                   <Link
                     key={genre}
                     href={`/genres/${genre.toLowerCase().replace(" ", "-")}`}
