@@ -43,7 +43,7 @@ interface MangaDetailClientProps {
     status: string;
     coverImage: string;
     rating: number;
-    totalViews: number;
+    totalViews: number; // Tạm dùng để hiển thị totalVotes
     totalBookmarks: number;
     chapters: Chapter[];
   };
@@ -57,24 +57,20 @@ export function MangaDetailClient({
   slug,
 }: MangaDetailClientProps) {
   const [manga, setManga] = useState(initialManga);
-  const [viewMode, setViewMode] = useState<"grid" | "list">("list"); // Giá trị mặc định ban đầu
+  const [viewMode, setViewMode] = useState<"grid" | "list">("list");
   const [sortAscending, setSortAscending] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [visibleChapters, setVisibleChapters] = useState(CHAPTERS_PER_PAGE);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const { ref: loadMoreRef, isIntersecting } = useIntersectionObserver();
 
-  // Lấy viewMode từ localStorage sau khi mount
   useEffect(() => {
     const savedViewMode = localStorage.getItem("chapterViewMode") as
       | "grid"
       | "list";
-    if (savedViewMode) {
-      setViewMode(savedViewMode);
-    }
+    if (savedViewMode) setViewMode(savedViewMode);
   }, []);
 
-  // Fetch lại dữ liệu nếu username từ localStorage khác "guest"
   useEffect(() => {
     const updateMangaData = async () => {
       const userData = localStorage.getItem("user");
@@ -86,14 +82,10 @@ export function MangaDetailClient({
         try {
           const response = await fetch(url, {
             method: "GET",
-            headers: {
-              accept: "*/*",
-            },
+            headers: { accept: "*/*" },
           });
-
-          if (!response.ok) {
+          if (!response.ok)
             throw new Error("Failed to fetch updated manga detail");
-          }
 
           const rawManga = await response.json();
           const updatedManga = {
@@ -109,8 +101,8 @@ export function MangaDetailClient({
             author: rawManga.creator || "Đang cập nhật",
             status: rawManga.status || "Đang cập nhật",
             coverImage: rawManga.image,
-            rating: rawManga.vote || 0,
-            totalViews: rawManga.views || 0,
+            rating: rawManga.vote || 5, // Mặc định 5 nếu không có vote
+            totalViews: rawManga.totalVote || 0, // Dùng totalVote từ API
             totalBookmarks: rawManga.bookmarks || 0,
             chapters: rawManga.listChapters.map((chapter: any) => ({
               number: chapter.chapterName.replace("Chapter ", ""),
@@ -124,14 +116,11 @@ export function MangaDetailClient({
         }
       }
     };
-
     updateMangaData();
   }, [slug]);
 
-  // Lọc và sắp xếp chapters
   const filteredAndSortedChapters = useMemo(() => {
     let filtered = [...manga.chapters];
-
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
       filtered = filtered.filter(
@@ -140,7 +129,6 @@ export function MangaDetailClient({
           chapter.title.toLowerCase().includes(query)
       );
     }
-
     return filtered.sort((a, b) => {
       const aNum = parseInt(a.number);
       const bNum = parseInt(b.number);
@@ -191,17 +179,56 @@ export function MangaDetailClient({
     }
   };
 
+  const handleRate = async (rating: number) => {
+    const userData = localStorage.getItem("user");
+    const token = localStorage.getItem("token"); // Lấy JWT từ localStorage
+
+    try {
+      console.log("Slug:", slug, "Rating:", rating, "Token:", token);
+      const headers: Record<string, string> = {
+        "Content-Type": "application/json",
+      };
+      if (token) {
+        headers["Authorization"] = `Bearer ${token}`; // Gửi JWT trong header
+      }
+
+      const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+      const response = await fetch(`${API_URL}vote/add`, {
+        method: "POST",
+        headers,
+        body: JSON.stringify({
+          comicSlug: slug,
+          rating: rating,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("API Error:", response.status, errorText);
+        throw new Error(`Failed to submit vote: ${errorText}`);
+      }
+
+      const result = await response.json();
+      console.log("Vote submitted:", result);
+
+      setManga((prev) => ({
+        ...prev,
+        rating: result.averageRating,
+        totalViews: result.totalVotes,
+      }));
+    } catch (error) {
+      console.error("Error submitting vote:", error);
+      alert("Không thể gửi đánh giá. Vui lòng thử lại!");
+      throw error;
+    }
+  };
+
   const displayedChapters = filteredAndSortedChapters.slice(0, visibleChapters);
   const hasMoreChapters = visibleChapters < filteredAndSortedChapters.length;
   const remainingChapters = filteredAndSortedChapters.length - visibleChapters;
 
-  const handleRate = async (rating: number) => {
-    console.log("Rated:", rating);
-  };
-
   return (
     <div className="container py-8">
-      {/* Breadcrumb */}
       <div className="flex items-center gap-2 mb-6 text-sm">
         <Link href="/" className="text-muted-foreground hover:text-foreground">
           Trang chủ
@@ -211,10 +238,8 @@ export function MangaDetailClient({
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-[1fr,400px] gap-8">
-        {/* Main content - Manga Info */}
         <div className="space-y-6">
           <div className="flex gap-6">
-            {/* Cover image */}
             <div className="w-[180px] shrink-0">
               <div className="relative aspect-[2/3] rounded-lg overflow-hidden shadow-md">
                 <Image
@@ -231,7 +256,6 @@ export function MangaDetailClient({
               </Button>
             </div>
 
-            {/* Info */}
             <div className="flex-1 min-w-0">
               <h1 className="text-2xl font-bold mb-2">{manga.title}</h1>
               {manga.alternativeTitles.length > 0 && (
@@ -256,6 +280,7 @@ export function MangaDetailClient({
                       initialRating={manga.rating}
                       onRate={handleRate}
                       size="lg"
+                      comicSlug={slug}
                     />
                     <span className="text-sm text-muted-foreground">
                       ({formatNumber(manga.totalViews)} lượt đánh giá)
@@ -297,7 +322,6 @@ export function MangaDetailClient({
             </div>
           </div>
 
-          {/* Description */}
           <div className="bg-muted/50 rounded-lg p-4">
             <h2 className="text-lg font-semibold mb-2">Giới thiệu</h2>
             <p className="text-muted-foreground whitespace-pre-line">
@@ -305,13 +329,11 @@ export function MangaDetailClient({
             </p>
           </div>
 
-          {/* Comments */}
           <div className="bg-muted/50 rounded-lg p-4">
             <CommentSection />
           </div>
         </div>
 
-        {/* Sidebar - Chapter list */}
         <div className="space-y-6">
           <div className="border rounded-lg sticky top-4">
             <div className="p-4 border-b flex flex-col sm:flex-row gap-4">

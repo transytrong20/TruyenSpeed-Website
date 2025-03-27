@@ -8,7 +8,7 @@ import {
 const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 export async function login(data: LoginRequest): Promise<LoginResponse> {
-  const response = await fetch(`${API_URL}/auth/login`, {
+  const response = await fetch(`${API_URL}auth/login`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

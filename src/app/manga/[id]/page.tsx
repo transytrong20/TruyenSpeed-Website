@@ -2,7 +2,8 @@ import { Metadata } from "next";
 import { MangaDetailClient } from "@/components/manga/MangaDetailClient";
 
 async function fetchMangaDetail(slug: string, username: string = "guest") {
-  const url = `https://localhost:44308/app/data/comic/thong-tin-truyen?slug=${slug}&username=${username}`;
+  const urlapi = process.env.NEXT_PUBLIC_API_BASE_URL;
+  const url = `${urlapi}comic/thong-tin-truyen?slug=${slug}&username=${username}`;
 
   try {
     const response = await fetch(url, {
@@ -78,6 +79,7 @@ export default async function MangaDetailPage({
     coverImage: rawManga.image,
     rating: rawManga.vote || 0,
     totalViews: rawManga.views || 0,
+    totalVote: rawManga.totalVote || 0,
     totalBookmarks: rawManga.bookmarks || 0,
     chapters: rawManga.listChapters.map((chapter: any) => ({
       number: chapter.chapterName.replace("Chapter ", ""),

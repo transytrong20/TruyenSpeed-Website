@@ -40,8 +40,9 @@ export function PopularSection() {
     const fetchPopularManga = async () => {
       setLoading(true);
       try {
+        const urlapi = process.env.NEXT_PUBLIC_API_BASE_URL;
         const response = await fetch(
-          `https://localhost:44308/app/data/comic/truyen-pho-bien?timeRange=${timeRange}`
+          `${urlapi}comic/truyen-pho-bien?timeRange=${timeRange}`
         );
         if (!response.ok) {
           throw new Error("Failed to fetch popular manga");

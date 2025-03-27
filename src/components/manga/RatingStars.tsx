@@ -7,9 +7,10 @@ import { cn } from "@/lib/utils";
 interface RatingStarsProps {
   initialRating?: number;
   totalStars?: number;
-  onRate?: (rating: number) => void;
+  onRate?: (rating: number) => Promise<void>; // Hàm async để gửi vote
   readonly?: boolean;
   size?: "sm" | "md" | "lg";
+  comicSlug?: string; // Slug của truyện
 }
 
 const sizeClasses = {
@@ -19,28 +20,42 @@ const sizeClasses = {
 } as const;
 
 export function RatingStars({
-  initialRating = 0,
+  initialRating = 5, // Mặc định 5 nếu không có vote
   totalStars = 5,
   onRate,
   readonly = false,
   size = "md",
+  comicSlug,
 }: RatingStarsProps) {
   const [rating, setRating] = useState(initialRating);
   const [hoverRating, setHoverRating] = useState(0);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleClick = (selectedRating: number) => {
-    if (readonly) return;
-    setRating(selectedRating);
-    onRate?.(selectedRating);
+  const handleClick = async (selectedRating: number) => {
+    if (readonly || isSubmitting) return;
+
+    setIsSubmitting(true);
+    setRating(selectedRating); // Cập nhật giao diện ngay lập tức
+
+    try {
+      if (onRate) {
+        await onRate(selectedRating); // Gửi vote lên API
+      }
+    } catch (error) {
+      console.error("Error submitting vote:", error);
+      setRating(initialRating); // Rollback nếu lỗi
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleMouseEnter = (hoveredRating: number) => {
-    if (readonly) return;
+    if (readonly || isSubmitting) return;
     setHoverRating(hoveredRating);
   };
 
   const handleMouseLeave = () => {
-    if (readonly) return;
+    if (readonly || isSubmitting) return;
     setHoverRating(0);
   };
 
@@ -59,9 +74,10 @@ export function RatingStars({
             className={cn(
               "transition-all duration-100",
               !readonly && "hover:scale-110 active:scale-95",
-              readonly && "cursor-default"
+              readonly && "cursor-default",
+              isSubmitting && "opacity-50 cursor-not-allowed"
             )}
-            disabled={readonly}
+            disabled={readonly || isSubmitting}
           >
             <Star
               className={cn(
