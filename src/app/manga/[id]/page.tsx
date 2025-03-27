@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import { MangaDetailClient } from "@/components/manga/MangaDetailClient";
 
-async function fetchMangaDetail(slug: string, username: string = "guest") {
+async function fetchMangaDetail(slug: string, username: string = "") {
   const urlapi = process.env.NEXT_PUBLIC_API_BASE_URL;
   const url = `${urlapi}comic/thong-tin-truyen?slug=${slug}&username=${username}`;
 
@@ -35,7 +35,7 @@ export const generateMetadata = async ({
 
   if (!rawManga) {
     return {
-      title: "Manga Not Found - MangaReader",
+      title: "Manga Not Found - TruyenSpeed",
       description: "Không tìm thấy thông tin truyện.",
     };
   }
@@ -43,7 +43,7 @@ export const generateMetadata = async ({
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://localhost:3000";
 
   return {
-    title: `${rawManga.comicName} - MangaReader`,
+    title: `${rawManga.comicName} - TruyenSpeed`,
     description: rawManga.introduction || "Đang cập nhật",
     openGraph: {
       title: rawManga.comicName,

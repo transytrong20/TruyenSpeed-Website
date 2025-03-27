@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { Star } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
+import { useRouter, usePathname } from "next/navigation";
 
 interface RatingStarsProps {
   initialRating?: number;
@@ -27,6 +29,8 @@ export function RatingStars({
   size = "md",
   comicSlug,
 }: RatingStarsProps) {
+  const router = useRouter();
+  const pathname = usePathname();
   const [rating, setRating] = useState(initialRating);
   const [hoverRating, setHoverRating] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -34,16 +38,41 @@ export function RatingStars({
   const handleClick = async (selectedRating: number) => {
     if (readonly || isSubmitting) return;
 
+    // Kiểm tra token trong localStorage
+    const token = localStorage.getItem("token");
+    if (!token) {
+      // Lưu URL hiện tại vào query parameter
+      const currentUrl = encodeURIComponent(pathname);
+      toast.error("Vui lòng đăng nhập", {
+        description: "Bạn cần đăng nhập để đánh giá truyện",
+        action: {
+          label: "Đăng nhập",
+          onClick: () => router.push(`/login?redirect=${currentUrl}`),
+        },
+        actionButtonStyle: {
+          background: "hsl(var(--primary))",
+          color: "white",
+        },
+      });
+      return;
+    }
+
     setIsSubmitting(true);
     setRating(selectedRating); // Cập nhật giao diện ngay lập tức
 
     try {
       if (onRate) {
         await onRate(selectedRating); // Gửi vote lên API
+        toast.success("Đánh giá thành công!", {
+          description: "Cảm ơn bạn đã đánh giá truyện",
+        });
       }
     } catch (error) {
       console.error("Error submitting vote:", error);
       setRating(initialRating); // Rollback nếu lỗi
+      toast.error("Không thể đánh giá", {
+        description: "Đã có lỗi xảy ra. Vui lòng thử lại sau.",
+      });
     } finally {
       setIsSubmitting(false);
     }

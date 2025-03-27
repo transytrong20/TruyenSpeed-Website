@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Eye, EyeOff, Loader2, User2, KeyRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -18,6 +18,7 @@ import {
 
 export function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -84,7 +85,13 @@ export function LoginForm() {
         // Kích hoạt event auth-change
         window.dispatchEvent(new Event("auth-change"));
 
-        router.push("/");
+        // Lấy URL redirect từ query params
+        const redirectUrl = searchParams.get("redirect");
+        if (redirectUrl) {
+          router.push(decodeURIComponent(redirectUrl));
+        } else {
+          router.push("/");
+        }
         router.refresh();
       } else {
         setError(response.message || "Đăng nhập thất bại");
