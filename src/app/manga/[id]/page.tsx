@@ -93,6 +93,9 @@ export default async function MangaDetailPage({
     totalViews: rawManga.views || 0,
     totalVote: rawManga.totalVote || 0,
     totalBookmarks: rawManga.bookmarks || 0,
+    isBookmarks: rawManga.isBookmarks || false,
+    isLiked: rawManga.isLiked || false,
+    totalLikes: rawManga.totalLikes || 0,
     chapters: rawManga.listChapters.map((chapter: any) => ({
       number: chapter.chapterName.replace("Chapter ", ""),
       title: chapter.title,

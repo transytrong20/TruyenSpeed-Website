@@ -16,6 +16,7 @@ import {
   Search,
   ChevronDown,
   Loader2,
+  Heart,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -48,6 +49,8 @@ interface MangaDetailClientProps {
     totalViews: number;
     isBookmarks?: boolean;
     totalBookmarks: number;
+    isLiked?: boolean;
+    totalLikes?: number;
     chapters: Chapter[];
   };
   slug: string;
@@ -114,6 +117,8 @@ export function MangaDetailClient({
           totalViews: rawManga.totalVote || 0,
           totalBookmarks: rawManga.bookmarks || 0,
           isBookmarks: rawManga.isBookmarks || false,
+          isLiked: rawManga.isLiked || false,
+          totalLikes: rawManga.totalLikes || 0,
           chapters: rawManga.listChapters.map((chapter: any) => ({
             number: chapter.chapterName.replace("Chapter ", ""),
             title: chapter.title,
@@ -172,6 +177,54 @@ export function MangaDetailClient({
     } catch (error) {
       console.error("Error toggling bookmark:", error);
       toast.error("Không thể cập nhật đánh dấu", {
+        description: "Đã có lỗi xảy ra. Vui lòng thử lại sau.",
+      });
+    }
+  };
+
+  const handleLike = async () => {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      const currentUrl = encodeURIComponent(pathname);
+      toast.error("Vui lòng đăng nhập", {
+        description: "Bạn cần đăng nhập để thích truyện",
+        action: {
+          label: "Đăng nhập",
+          onClick: () => router.push(`/login?redirect=${currentUrl}`),
+        },
+        actionButtonStyle: {
+          background: "hsl(var(--primary))",
+          color: "white",
+        },
+      });
+      return;
+    }
+
+    const url = `https://localhost:44308/app/data/comiclike/add?slug=${slug}`;
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          accept: "*/*",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to toggle like");
+      }
+
+      setManga((prev) => ({
+        ...prev,
+        isLiked: !prev.isLiked,
+        totalLikes: prev.isLiked
+          ? (prev.totalLikes || 0) - 1
+          : (prev.totalLikes || 0) + 1,
+      }));
+    } catch (error) {
+      console.error("Error toggling like:", error);
+      toast.error("Không thể cập nhật lượt thích", {
         description: "Đã có lỗi xảy ra. Vui lòng thử lại sau.",
       });
     }
@@ -321,6 +374,20 @@ export function MangaDetailClient({
                 />
                 {manga.isBookmarks ? "Đã đánh dấu" : "Đánh dấu"}
               </Button>
+
+              <Button
+                variant={manga.isLiked ? "default" : "outline"}
+                className={`w-full ${
+                  manga.isLiked ? "bg-red-600 hover:bg-red-700" : ""
+                }`}
+                onClick={handleLike}
+              >
+                <Heart
+                  className="mr-2 h-4 w-4"
+                  fill={manga.isLiked ? "currentColor" : "none"}
+                />
+                {manga.isLiked ? "Đã thích" : "Thích"}
+              </Button>
             </div>
 
             <div className="flex-1 min-w-0">
@@ -364,6 +431,10 @@ export function MangaDetailClient({
                 <div className="flex items-center gap-2 text-sm">
                   <Bookmark className="h-4 w-4 text-muted-foreground" />
                   <span>{formatNumber(manga.totalBookmarks)} đánh dấu</span>
+                </div>
+                <div className="flex items-center gap-2 text-sm">
+                  <Heart className="h-4 w-4 text-muted-foreground" />
+                  <span>{formatNumber(manga.totalLikes || 0)} lượt thích</span>
                 </div>
               </div>
 
