@@ -36,41 +36,52 @@ import {
 } from "@/components/ui/sheet";
 import { MangaPageTurner3D } from "@/components/effects/MangaPageTurner3D";
 import Image from "next/image";
+import { useRouter, usePathname } from "next/navigation";
 
-// Mock data: Trong thực tế nên thay thế bằng dữ liệu từ API
-const MANGA_DETAIL = {
-  id: "dai-quan-gia-la-ma-hoang",
-  title: "Đại Quản Gia Là Ma Hoàng",
-  coverImage:
-    "http://192.168.1.63:9000/truyenspeed/ComicBookCover/dai-quan-gia-la-ma-hoang.webp",
-  chapters: [
-    { number: "173", title: "Kết cục của cuộc chiến" },
-    { number: "172", title: "Đối đầu" },
-    { number: "171", title: "Phản công" },
-    { number: "170", title: "Nguy hiểm" },
-    { number: "169", title: "Bí mật" },
-  ],
-};
-
-// Mock data cho trang truyện
-const CHAPTER_PAGES = Array.from({ length: 50 }, (_, index) => {
-  const pageNumber = (index + 1).toString().padStart(2, "0");
-  return `http://192.168.1.63:9000/truyenspeed/DataComic/dai-quan-gia-la-ma-hoang/chapter-173/dai-quan-gia-la-ma-hoang_chapter-173_trang-${pageNumber}.webp`;
-});
-
-interface ChapterPageClientProps {
-  params: {
-    id: string;
-    chapter: string;
-  };
+interface ReadingComic {
+  title: string;
+  description: string;
+  coverImage: string;
+  imageChapters: {
+    image: string;
+    title: string;
+    alt: string;
+  }[];
+  listChapters: {
+    chapterName: string;
+    title: string;
+  }[];
 }
 
-export function ChapterPageClient({ params }: ChapterPageClientProps) {
+interface ChapterPageClientProps {
+  params: { id: string; chapter: string };
+  readingComic: ReadingComic;
+}
+
+export function ChapterPageClient({
+  params,
+  readingComic,
+}: ChapterPageClientProps) {
+  const router = useRouter();
+  const pathname = usePathname();
   const [chapterIndex, setChapterIndex] = useState(0);
   const [selectedChapter, setSelectedChapter] = useState(params.chapter);
   const [sortAscending, setSortAscending] = useState(false);
   const [showUI, setShowUI] = useState(true);
-  const manga = MANGA_DETAIL;
+
+  // Chuẩn hóa danh sách chương
+  const normalizedChapters = readingComic.listChapters.map((ch) => ({
+    number: ch.chapterName.toLowerCase().replace("chapter ", "").trim(),
+    title: ch.title,
+  }));
+
+  const manga = {
+    id: params.id,
+    title: readingComic.title,
+    coverImage: readingComic.coverImage,
+    chapters: normalizedChapters,
+  };
+
   const [readingMode, setReadingMode] = useState(() => {
     if (typeof window !== "undefined") {
       return localStorage.getItem("readingMode") || "vertical";
@@ -80,58 +91,57 @@ export function ChapterPageClient({ params }: ChapterPageClientProps) {
 
   // Sắp xếp danh sách chương
   const sortedChapters = [...manga.chapters].sort((a, b) => {
-    const aNum = parseInt(a.number);
-    const bNum = parseInt(b.number);
+    const aNum = parseFloat(a.number);
+    const bNum = parseFloat(b.number);
     return sortAscending ? aNum - bNum : bNum - aNum;
   });
 
   // Tìm index của chapter hiện tại
   useEffect(() => {
-    const index = manga.chapters.findIndex((c) => c.number === params.chapter);
+    const index = sortedChapters.findIndex((c) => c.number === params.chapter);
     setChapterIndex(index !== -1 ? index : 0);
     setSelectedChapter(params.chapter);
-  }, [params.chapter, manga.chapters]);
+  }, [params.chapter, sortedChapters]);
 
   const prevChapter =
-    chapterIndex < manga.chapters.length - 1
-      ? manga.chapters[chapterIndex + 1]
+    chapterIndex < sortedChapters.length - 1
+      ? sortedChapters[chapterIndex + 1]
       : null;
   const nextChapter =
-    chapterIndex > 0 ? manga.chapters[chapterIndex - 1] : null;
+    chapterIndex > 0 ? sortedChapters[chapterIndex - 1] : null;
 
-  // Handler khi người dùng chọn chương khác
+  // Dữ liệu trang đã được API sắp xếp sẵn
+  const sortedPages = readingComic.imageChapters;
+
   const handleChapterChange = (value: string) => {
-    window.location.href = `/manga/${manga.id}/${value}`;
+    router.push(`/manga/${manga.id}/${value}`);
   };
 
-  // Handler khi người dùng lật qua chapter trước/sau
   const goToPrevChapter = () => {
     if (prevChapter) {
-      window.location.href = `/manga/${manga.id}/${prevChapter.number}`;
+      router.push(`/manga/${manga.id}/${prevChapter.number}`);
     }
   };
 
   const goToNextChapter = () => {
     if (nextChapter) {
-      window.location.href = `/manga/${manga.id}/${nextChapter.number}`;
+      router.push(`/manga/${manga.id}/${nextChapter.number}`);
     }
   };
 
   const handleReadingModeChange = (mode: string) => {
     setReadingMode(mode);
     localStorage.setItem("readingMode", mode);
-    // Reload trang để áp dụng chế độ đọc mới
-    window.location.href = `${window.location.pathname}?mode=${mode}`;
+    router.push(`${pathname}?mode=${mode}`);
   };
 
-  // Toggle UI visibility when tapping on the screen
   const handleContentClick = () => {
     setShowUI(!showUI);
   };
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
-      {/* Top navigation - now conditionally rendered */}
+      {/* Top navigation */}
       <div
         className={`fixed top-0 left-0 right-0 z-20 bg-background/95 backdrop-blur border-b transition-transform duration-300 ${
           showUI ? "translate-y-0" : "-translate-y-full"
@@ -157,11 +167,10 @@ export function ChapterPageClient({ params }: ChapterPageClientProps) {
                 </Link>
               </Button>
               <h1 className="text-sm font-medium truncate max-w-[150px] md:max-w-xs">
-                {manga.title} - Chapter {params.chapter}
+                {manga.title} - {params.chapter}
               </h1>
             </div>
 
-            {/* Desktop controls */}
             <div className="hidden md:flex items-center gap-2">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -211,7 +220,6 @@ export function ChapterPageClient({ params }: ChapterPageClientProps) {
               </Button>
 
               <Select
-                defaultValue={params.chapter}
                 value={selectedChapter}
                 onValueChange={handleChapterChange}
               >
@@ -221,14 +229,13 @@ export function ChapterPageClient({ params }: ChapterPageClientProps) {
                 <SelectContent>
                   {sortedChapters.map((chapter) => (
                     <SelectItem key={chapter.number} value={chapter.number}>
-                      Chapter {chapter.number}
+                      {chapter.number}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
 
-            {/* Mobile menu button */}
             <div className="md:hidden">
               <Sheet>
                 <SheetTrigger asChild>
@@ -278,7 +285,6 @@ export function ChapterPageClient({ params }: ChapterPageClientProps) {
                           <ArrowUpDown className="h-4 w-4" />
                         </Button>
                         <Select
-                          defaultValue={params.chapter}
                           value={selectedChapter}
                           onValueChange={handleChapterChange}
                         >
@@ -291,7 +297,7 @@ export function ChapterPageClient({ params }: ChapterPageClientProps) {
                                 key={chapter.number}
                                 value={chapter.number}
                               >
-                                Chapter {chapter.number}
+                                {chapter.number}
                               </SelectItem>
                             ))}
                           </SelectContent>
@@ -309,26 +315,32 @@ export function ChapterPageClient({ params }: ChapterPageClientProps) {
       {/* Main content */}
       <div className="flex-1 py-4 mt-14" onClick={handleContentClick}>
         {readingMode === "vertical" ? (
-          <div className="max-w-4xl mx-auto space-y-2 px-0 md:px-4">
-            {CHAPTER_PAGES.map((page, index) => (
+          <div className="container mx-auto px-2 md:px-4">
+            {sortedPages.map((page, index) => (
               <div
                 key={index}
-                className="relative aspect-[2/3] md:rounded-lg overflow-hidden"
+                className="relative w-full md:rounded-lg overflow-hidden shadow-md"
               >
                 <Image
-                  src={page}
-                  alt={`${manga.title} - Trang ${index + 1}`}
-                  fill
-                  className="object-contain"
+                  src={page.image}
+                  alt={page.alt}
+                  width={0}
+                  height={0}
+                  className="w-full h-auto"
                   priority={index < 2}
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 75vw, 50vw"
+                  loading={index < 2 ? "eager" : "lazy"}
+                  sizes="100vw"
+                  quality={85}
+                  style={{
+                    maxWidth: "100%",
+                  }}
                 />
               </div>
             ))}
           </div>
         ) : (
           <MangaPageTurner3D
-            pages={CHAPTER_PAGES}
+            pages={sortedPages.map((page) => page.image)}
             onPrevPage={() => {}}
             onNextPage={() => {}}
             mangaTitle={manga.title}
@@ -350,7 +362,7 @@ export function ChapterPageClient({ params }: ChapterPageClientProps) {
               size="sm"
               asChild
               disabled={!prevChapter}
-              className="min-w-[100px]"
+              className="min-w-[100px] hover:bg-primary hover:text-primary-foreground transition-colors"
             >
               <Link
                 href={
@@ -363,13 +375,23 @@ export function ChapterPageClient({ params }: ChapterPageClientProps) {
             </Button>
 
             <div className="flex items-center gap-2">
-              <Button variant="outline" size="icon" asChild>
+              <Button
+                variant="outline"
+                size="icon"
+                asChild
+                className="hover:bg-primary hover:text-primary-foreground transition-colors"
+              >
                 <Link href={`/manga/${manga.id}`}>
                   <List className="h-4 w-4" />
                   <span className="sr-only">Danh sách chương</span>
                 </Link>
               </Button>
-              <Button variant="outline" size="icon" asChild>
+              <Button
+                variant="outline"
+                size="icon"
+                asChild
+                className="hover:bg-primary hover:text-primary-foreground transition-colors"
+              >
                 <Link href="/">
                   <Home className="h-4 w-4" />
                   <span className="sr-only">Trang chủ</span>
@@ -382,7 +404,7 @@ export function ChapterPageClient({ params }: ChapterPageClientProps) {
               size="sm"
               asChild
               disabled={!nextChapter}
-              className="min-w-[100px]"
+              className="min-w-[100px] hover:bg-primary hover:text-primary-foreground transition-colors"
             >
               <Link
                 href={

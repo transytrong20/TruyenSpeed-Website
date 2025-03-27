@@ -97,8 +97,11 @@ export default async function MangaDetailPage({
     isLiked: rawManga.isLiked || false,
     totalLikes: rawManga.totalLikes || 0,
     chapters: rawManga.listChapters.map((chapter: any) => ({
-      number: chapter.chapterName.replace("Chapter ", ""),
-      title: chapter.title,
+      number: chapter.chapterName
+        .replace("Chapter ", "")
+        .replace("chapter ", ""),
+      // title: chapter.title,
+      title: chapter.chapterName,
       releaseDate: chapter.releaseDate.split("T")[0],
     })),
   };

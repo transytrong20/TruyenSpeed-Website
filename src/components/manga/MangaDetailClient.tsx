@@ -123,7 +123,9 @@ export function MangaDetailClient({
           isLiked: rawManga.isLiked || false,
           totalLikes: rawManga.totalLikes || 0,
           chapters: rawManga.listChapters.map((chapter: any) => ({
-            number: chapter.chapterName.replace("Chapter ", ""),
+            number: chapter.chapterName
+              .replace("Chapter ", "")
+              .replace("chapter ", ""),
             title: chapter.title,
             releaseDate: chapter.releaseDate.split("T")[0],
           })),
