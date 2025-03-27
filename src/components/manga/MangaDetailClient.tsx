@@ -33,25 +33,16 @@ interface Chapter {
 }
 
 interface MangaDetailClientProps {
-  manga: {
-    id: string;
-    title: string;
-    alternativeTitles: string[];
-    description: string;
-    genres: string[];
-    author: string;
-    status: string;
-    coverImage: string;
-    rating: number;
-    totalViews: number;
-    totalBookmarks: number;
-    chapters: Chapter[];
-  };
+  slug: string; // Nhận slug từ params
 }
 
 const CHAPTERS_PER_PAGE = 20;
 
-export function MangaDetailClient({ manga }: MangaDetailClientProps) {
+export function MangaDetailClient({ slug }: MangaDetailClientProps) {
+  const [manga, setManga] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
   const [viewMode, setViewMode] = useState<"grid" | "list">(() => {
     if (typeof window !== "undefined") {
       return (
@@ -66,8 +57,71 @@ export function MangaDetailClient({ manga }: MangaDetailClientProps) {
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const { ref: loadMoreRef, isIntersecting } = useIntersectionObserver();
 
+  // Lấy username từ localStorage
+  useEffect(() => {
+    const fetchManga = async () => {
+      setLoading(true);
+      let username = "guest";
+
+      if (typeof window !== "undefined") {
+        const userData = localStorage.getItem("user");
+        const user = userData ? JSON.parse(userData) : null;
+        username = user?.username || "guest";
+      }
+
+      const url = `https://localhost:44308/app/data/comic/thong-tin-truyen?slug=${slug}&username=${username}`;
+      try {
+        const response = await fetch(url, {
+          method: "GET",
+          headers: {
+            accept: "*/*",
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch manga detail");
+        }
+
+        const rawManga = await response.json();
+
+        // Chuyển đổi dữ liệu
+        const mangaData = {
+          id: slug,
+          title: rawManga.comicName,
+          alternativeTitles: rawManga.alternativeTitles
+            ? rawManga.alternativeTitles.split(", ")
+            : [rawManga.otherName],
+          description: rawManga.introduction || "Đang cập nhật",
+          genres: rawManga.listTags.map(
+            (tag: { tagName: string }) => tag.tagName
+          ),
+          author: rawManga.creator || "Đang cập nhật",
+          status: rawManga.status || "Đang cập nhật",
+          coverImage: rawManga.image,
+          rating: rawManga.vote || 0,
+          totalViews: rawManga.views || 0,
+          totalBookmarks: rawManga.bookmarks || 0,
+          chapters: rawManga.listChapters.map((chapter: any) => ({
+            number: chapter.chapterName.replace("Chapter ", ""),
+            title: chapter.title,
+            releaseDate: chapter.releaseDate.split("T")[0],
+          })),
+        };
+
+        setManga(mangaData);
+      } catch (err) {
+        setError("Không thể tải thông tin truyện. Vui lòng thử lại sau.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchManga();
+  }, [slug]);
+
   // Lọc và sắp xếp chapters
   const filteredAndSortedChapters = useMemo(() => {
+    if (!manga?.chapters) return [];
     let filtered = [...manga.chapters];
 
     if (searchQuery) {
@@ -84,13 +138,14 @@ export function MangaDetailClient({ manga }: MangaDetailClientProps) {
       const bNum = parseInt(b.number);
       return sortAscending ? aNum - bNum : bNum - aNum;
     });
-  }, [manga.chapters, searchQuery, sortAscending]);
+  }, [manga?.chapters, searchQuery, sortAscending]);
 
-  // Load more chapters when scrolling to bottom
+  // Các logic khác giữ nguyên, chỉ cần kiểm tra manga tồn tại
   useEffect(() => {
     if (
       isIntersecting &&
       !isLoadingMore &&
+      manga &&
       visibleChapters < filteredAndSortedChapters.length
     ) {
       setIsLoadingMore(true);
@@ -103,10 +158,9 @@ export function MangaDetailClient({ manga }: MangaDetailClientProps) {
     }
   }, [isIntersecting, filteredAndSortedChapters.length, isLoadingMore]);
 
-  // Reset visible chapters when search query changes
   useEffect(() => {
     setVisibleChapters(CHAPTERS_PER_PAGE);
-  }, [searchQuery, sortAscending]); // Thêm sortAscending để reset khi đổi thứ tự
+  }, [searchQuery, sortAscending]);
 
   const handleViewModeChange = (mode: "grid" | "list") => {
     setViewMode(mode);
@@ -114,12 +168,8 @@ export function MangaDetailClient({ manga }: MangaDetailClientProps) {
   };
 
   const formatNumber = (num: number) => {
-    if (num >= 1000000) {
-      return (num / 1000000).toFixed(1) + "M";
-    }
-    if (num >= 1000) {
-      return (num / 1000).toFixed(1) + "K";
-    }
+    if (num >= 1000000) return (num / 1000000).toFixed(1) + "M";
+    if (num >= 1000) return (num / 1000).toFixed(1) + "K";
     return num.toString();
   };
 
@@ -140,9 +190,20 @@ export function MangaDetailClient({ manga }: MangaDetailClientProps) {
   const remainingChapters = filteredAndSortedChapters.length - visibleChapters;
 
   const handleRate = async (rating: number) => {
-    // TODO: Gửi rating lên server
     console.log("Rated:", rating);
   };
+
+  if (loading) {
+    return (
+      <div className="container py-8 flex justify-center">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return <div className="container py-8 text-center">{error}</div>;
+  }
 
   return (
     <div className="container py-8">
@@ -221,7 +282,7 @@ export function MangaDetailClient({ manga }: MangaDetailClientProps) {
               </div>
 
               <div className="flex flex-wrap gap-2 mb-4">
-                {manga.genres.map((genre) => (
+                {manga.genres.map((genre: string) => (
                   <Link
                     key={genre}
                     href={`/genres/${genre.toLowerCase().replace(" ", "-")}`}
@@ -233,7 +294,7 @@ export function MangaDetailClient({ manga }: MangaDetailClientProps) {
               </div>
 
               <ReadOptions
-                mangaId={parseInt(manga.id)}
+                mangaId={parseInt(manga.id) || 0}
                 lastChapter={parseInt(manga.chapters[0].number)}
                 firstChapter={parseInt(
                   manga.chapters[manga.chapters.length - 1].number
