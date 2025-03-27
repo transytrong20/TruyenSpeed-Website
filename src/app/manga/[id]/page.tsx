@@ -1,16 +1,23 @@
 import { Metadata } from "next";
 import { MangaDetailClient } from "@/components/manga/MangaDetailClient";
 
-async function fetchMangaDetail(slug: string, username: string = "") {
+async function fetchMangaDetail(slug: string, token?: string) {
   const urlapi = process.env.NEXT_PUBLIC_API_BASE_URL;
-  const url = `${urlapi}comic/thong-tin-truyen?slug=${slug}&username=${username}`;
+  const url = `${urlapi}comic/thong-tin-truyen?slug=${slug}`;
 
   try {
+    const headers: Record<string, string> = {
+      accept: "*/*",
+    };
+
+    // Nếu có token, thêm Bearer Token vào header
+    if (token) {
+      headers["Authorization"] = `Bearer ${token}`;
+    }
+
     const response = await fetch(url, {
       method: "GET",
-      headers: {
-        accept: "*/*",
-      },
+      headers,
       cache: "no-store",
     });
 
@@ -21,6 +28,7 @@ async function fetchMangaDetail(slug: string, username: string = "") {
     const data = await response.json();
     return data;
   } catch (error) {
+    console.error("Error fetching manga detail:", error);
     return null;
   }
 }
@@ -28,10 +36,12 @@ async function fetchMangaDetail(slug: string, username: string = "") {
 export const generateMetadata = async ({
   params,
 }: {
-  params: Promise<{ id: string }>; // Thêm Promise để rõ ràng hóa bất đồng bộ
+  params: Promise<{ id: string }>;
 }): Promise<Metadata> => {
-  const { id } = await params; // Await params trước khi dùng
-  const rawManga = await fetchMangaDetail(id);
+  const { id } = await params;
+  // Lấy token từ context hoặc nơi lưu trữ (ví dụ: server-side session, cookie)
+  const token = process.env.SERVER_TOKEN || ""; // Giả sử token được lưu ở đây, tùy vào cách bạn quản lý auth
+  const rawManga = await fetchMangaDetail(id, token);
 
   if (!rawManga) {
     return {
@@ -57,10 +67,12 @@ export const generateMetadata = async ({
 export default async function MangaDetailPage({
   params,
 }: {
-  params: Promise<{ id: string }>; // Thêm Promise để rõ ràng hóa bất đồng bộ
+  params: Promise<{ id: string }>;
 }) {
-  const { id } = await params; // Await params trước khi dùng
-  const rawManga = await fetchMangaDetail(id);
+  const { id } = await params;
+  // Lấy token từ context hoặc nơi lưu trữ (tùy hệ thống auth của bạn)
+  const token = process.env.SERVER_TOKEN || ""; // Thay bằng logic lấy token thực tế
+  const rawManga = await fetchMangaDetail(id, token);
 
   if (!rawManga) {
     return <div>Không thể tải thông tin truyện. Vui lòng thử lại sau.</div>;

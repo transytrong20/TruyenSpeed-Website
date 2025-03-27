@@ -25,6 +25,8 @@ import { Badge } from "@/components/ui/badge";
 import { useIntersectionObserver } from "@/hooks/useIntersectionObserver";
 import { CommentSection } from "@/components/manga/CommentSection";
 import { RatingStars } from "@/components/manga/RatingStars";
+import { useRouter, usePathname } from "next/navigation";
+import { toast } from "sonner";
 
 interface Chapter {
   number: string;
@@ -43,7 +45,8 @@ interface MangaDetailClientProps {
     status: string;
     coverImage: string;
     rating: number;
-    totalViews: number; // Tạm dùng để hiển thị totalVotes
+    totalViews: number;
+    isBookmarks?: boolean;
     totalBookmarks: number;
     chapters: Chapter[];
   };
@@ -64,6 +67,10 @@ export function MangaDetailClient({
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const { ref: loadMoreRef, isIntersecting } = useIntersectionObserver();
 
+  // Di chuyển hooks ra top level
+  const router = useRouter();
+  const pathname = usePathname();
+
   useEffect(() => {
     const savedViewMode = localStorage.getItem("chapterViewMode") as
       | "grid"
@@ -73,51 +80,102 @@ export function MangaDetailClient({
 
   useEffect(() => {
     const updateMangaData = async () => {
-      const userData = localStorage.getItem("user");
-      const user = userData ? JSON.parse(userData) : null;
-      const username = user?.username || "guest";
+      const token = localStorage.getItem("token");
+      const url = `https://localhost:44308/app/data/comic/thong-tin-truyen?slug=${slug}`;
 
-      if (username !== "guest") {
-        const url = `https://localhost:44308/app/data/comic/thong-tin-truyen?slug=${slug}&username=${username}`;
-        try {
-          const response = await fetch(url, {
-            method: "GET",
-            headers: { accept: "*/*" },
-          });
-          if (!response.ok)
-            throw new Error("Failed to fetch updated manga detail");
-
-          const rawManga = await response.json();
-          const updatedManga = {
-            id: slug,
-            title: rawManga.comicName,
-            alternativeTitles: rawManga.alternativeTitles
-              ? rawManga.alternativeTitles.split(", ")
-              : [rawManga.otherName],
-            description: rawManga.introduction || "Đang cập nhật",
-            genres: rawManga.listTags.map(
-              (tag: { tagName: string }) => tag.tagName
-            ),
-            author: rawManga.creator || "Đang cập nhật",
-            status: rawManga.status || "Đang cập nhật",
-            coverImage: rawManga.image,
-            rating: rawManga.vote || 5, // Mặc định 5 nếu không có vote
-            totalViews: rawManga.totalVote || 0, // Dùng totalVote từ API
-            totalBookmarks: rawManga.bookmarks || 0,
-            chapters: rawManga.listChapters.map((chapter: any) => ({
-              number: chapter.chapterName.replace("Chapter ", ""),
-              title: chapter.title,
-              releaseDate: chapter.releaseDate.split("T")[0],
-            })),
-          };
-          setManga(updatedManga);
-        } catch (error) {
-          console.error("Error updating manga detail:", error);
+      try {
+        const headers: Record<string, string> = { accept: "*/*" };
+        if (token) {
+          headers["Authorization"] = `Bearer ${token}`;
         }
+
+        const response = await fetch(url, {
+          method: "GET",
+          headers,
+        });
+        if (!response.ok)
+          throw new Error("Failed to fetch updated manga detail");
+
+        const rawManga = await response.json();
+        const updatedManga = {
+          id: slug,
+          title: rawManga.comicName,
+          alternativeTitles: rawManga.alternativeTitles
+            ? rawManga.alternativeTitles.split(", ")
+            : [rawManga.otherName],
+          description: rawManga.introduction || "Đang cập nhật",
+          genres: rawManga.listTags.map(
+            (tag: { tagName: string }) => tag.tagName
+          ),
+          author: rawManga.creator || "Đang cập nhật",
+          status: rawManga.status || "Đang cập nhật",
+          coverImage: rawManga.image,
+          rating: rawManga.vote || 5,
+          totalViews: rawManga.totalVote || 0,
+          totalBookmarks: rawManga.bookmarks || 0,
+          isBookmarks: rawManga.isBookmarks || false,
+          chapters: rawManga.listChapters.map((chapter: any) => ({
+            number: chapter.chapterName.replace("Chapter ", ""),
+            title: chapter.title,
+            releaseDate: chapter.releaseDate.split("T")[0],
+          })),
+        };
+        setManga(updatedManga);
+      } catch (error) {
+        console.error("Error updating manga detail:", error);
       }
     };
-    updateMangaData();
+
+    updateMangaData(); // Gọi API bất kể có token hay không
   }, [slug]);
+
+  const handleBookmark = async () => {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      const currentUrl = encodeURIComponent(pathname);
+      toast.error("Vui lòng đăng nhập", {
+        description: "Bạn cần đăng nhập để đánh dấu truyện",
+        action: {
+          label: "Đăng nhập",
+          onClick: () => router.push(`/login?redirect=${currentUrl}`),
+        },
+        actionButtonStyle: {
+          background: "hsl(var(--primary))",
+          color: "white",
+        },
+      });
+      return;
+    }
+
+    const url = `https://localhost:44308/app/data/comicbookmark/add?slug=${slug}`;
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          accept: "*/*",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to toggle bookmark");
+      }
+
+      setManga((prev) => ({
+        ...prev,
+        isBookmarks: !prev.isBookmarks,
+        totalBookmarks: prev.isBookmarks
+          ? prev.totalBookmarks - 1
+          : prev.totalBookmarks + 1,
+      }));
+    } catch (error) {
+      console.error("Error toggling bookmark:", error);
+      toast.error("Không thể cập nhật đánh dấu", {
+        description: "Đã có lỗi xảy ra. Vui lòng thử lại sau.",
+      });
+    }
+  };
 
   const filteredAndSortedChapters = useMemo(() => {
     let filtered = [...manga.chapters];
@@ -180,8 +238,7 @@ export function MangaDetailClient({
   };
 
   const handleRate = async (rating: number) => {
-    const userData = localStorage.getItem("user");
-    const token = localStorage.getItem("token"); // Lấy JWT từ localStorage
+    const token = localStorage.getItem("token");
 
     try {
       console.log("Slug:", slug, "Rating:", rating, "Token:", token);
@@ -189,7 +246,7 @@ export function MangaDetailClient({
         "Content-Type": "application/json",
       };
       if (token) {
-        headers["Authorization"] = `Bearer ${token}`; // Gửi JWT trong header
+        headers["Authorization"] = `Bearer ${token}`;
       }
 
       const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
@@ -251,8 +308,18 @@ export function MangaDetailClient({
                   priority
                 />
               </div>
-              <Button variant="outline" className="w-full mt-3">
-                <Bookmark className="mr-2 h-4 w-4" /> Đánh dấu
+              <Button
+                variant={manga.isBookmarks ? "default" : "outline"}
+                className={`w-full mt-3 ${
+                  manga.isBookmarks ? "bg-green-600 hover:bg-green-700" : ""
+                }`}
+                onClick={handleBookmark}
+              >
+                <Bookmark
+                  className="mr-2 h-4 w-4"
+                  fill={manga.isBookmarks ? "currentColor" : "none"}
+                />
+                {manga.isBookmarks ? "Đã đánh dấu" : "Đánh dấu"}
               </Button>
             </div>
 
