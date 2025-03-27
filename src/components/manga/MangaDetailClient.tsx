@@ -47,8 +47,8 @@ interface MangaDetailClientProps {
     coverImage: string;
     rating: number;
     totalViews: number;
-    isBookmarks?: boolean;
     totalBookmarks: number;
+    isBookmarks?: boolean;
     isLiked?: boolean;
     totalLikes?: number;
     chapters: Chapter[];
@@ -62,7 +62,11 @@ export function MangaDetailClient({
   manga: initialManga,
   slug,
 }: MangaDetailClientProps) {
-  const [manga, setManga] = useState(initialManga);
+  const [manga, setManga] = useState({
+    ...initialManga,
+    isLiked: initialManga.isLiked || false,
+    totalLikes: initialManga.totalLikes || 0,
+  });
   const [viewMode, setViewMode] = useState<"grid" | "list">("list");
   const [sortAscending, setSortAscending] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -70,7 +74,6 @@ export function MangaDetailClient({
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const { ref: loadMoreRef, isIntersecting } = useIntersectionObserver();
 
-  // Di chuyển hooks ra top level
   const router = useRouter();
   const pathname = usePathname();
 
@@ -131,7 +134,7 @@ export function MangaDetailClient({
       }
     };
 
-    updateMangaData(); // Gọi API bất kể có token hay không
+    updateMangaData();
   }, [slug]);
 
   const handleBookmark = async () => {
@@ -218,9 +221,7 @@ export function MangaDetailClient({
       setManga((prev) => ({
         ...prev,
         isLiked: !prev.isLiked,
-        totalLikes: prev.isLiked
-          ? (prev.totalLikes || 0) - 1
-          : (prev.totalLikes || 0) + 1,
+        totalLikes: prev.isLiked ? prev.totalLikes - 1 : prev.totalLikes + 1,
       }));
     } catch (error) {
       console.error("Error toggling like:", error);
@@ -233,21 +234,45 @@ export function MangaDetailClient({
   const filteredAndSortedChapters = useMemo(() => {
     let filtered = [...manga.chapters];
     if (searchQuery) {
-      const query = searchQuery.toLowerCase();
-      filtered = filtered.filter(
-        (chapter) =>
-          chapter.number.includes(query) ||
-          chapter.title.toLowerCase().includes(query)
-      );
+      const query = searchQuery.toLowerCase().replace("chapter ", "").trim();
+      filtered = filtered.filter((chapter) => {
+        const chapterNum = chapter.number.toLowerCase();
+        const chapterTitle = chapter.title.toLowerCase();
+        return chapterNum.includes(query) || chapterTitle.includes(query);
+      });
     }
-    return filtered.sort((a, b) => {
+    const sorted = filtered.sort((a, b) => {
       const aNum = parseInt(a.number);
       const bNum = parseInt(b.number);
       return sortAscending ? aNum - bNum : bNum - aNum;
     });
+    console.log(
+      "Filtered chapters length:",
+      sorted.length,
+      "Query:",
+      searchQuery
+    ); // Debug
+    return sorted;
   }, [manga.chapters, searchQuery, sortAscending]);
 
+  // Reset visibleChapters khi searchQuery hoặc sortAscending thay đổi
   useEffect(() => {
+    setVisibleChapters(CHAPTERS_PER_PAGE);
+    setIsLoadingMore(false);
+  }, [searchQuery, sortAscending]);
+
+  // Load thêm chapter khi scroll tới cuối
+  useEffect(() => {
+    console.log(
+      "Intersection check:",
+      isIntersecting,
+      "Loading:",
+      isLoadingMore,
+      "Visible:",
+      visibleChapters,
+      "Total filtered:",
+      filteredAndSortedChapters.length
+    ); // Debug
     if (
       isIntersecting &&
       !isLoadingMore &&
@@ -259,13 +284,18 @@ export function MangaDetailClient({
           Math.min(prev + CHAPTERS_PER_PAGE, filteredAndSortedChapters.length)
         );
         setIsLoadingMore(false);
+        console.log(
+          "Loaded more, new visible:",
+          visibleChapters + CHAPTERS_PER_PAGE
+        ); // Debug
       }, 500);
     }
-  }, [isIntersecting, filteredAndSortedChapters.length, isLoadingMore]);
-
-  useEffect(() => {
-    setVisibleChapters(CHAPTERS_PER_PAGE);
-  }, [searchQuery, sortAscending]);
+  }, [
+    isIntersecting,
+    filteredAndSortedChapters.length,
+    isLoadingMore,
+    visibleChapters,
+  ]);
 
   const handleViewModeChange = (mode: "grid" | "list") => {
     setViewMode(mode);
@@ -278,64 +308,8 @@ export function MangaDetailClient({
     return num.toString();
   };
 
-  const handleLoadMore = () => {
-    if (!isLoadingMore) {
-      setIsLoadingMore(true);
-      setTimeout(() => {
-        setVisibleChapters((prev) =>
-          Math.min(prev + CHAPTERS_PER_PAGE, filteredAndSortedChapters.length)
-        );
-        setIsLoadingMore(false);
-      }, 500);
-    }
-  };
-
-  const handleRate = async (rating: number) => {
-    const token = localStorage.getItem("token");
-
-    try {
-      console.log("Slug:", slug, "Rating:", rating, "Token:", token);
-      const headers: Record<string, string> = {
-        "Content-Type": "application/json",
-      };
-      if (token) {
-        headers["Authorization"] = `Bearer ${token}`;
-      }
-
-      const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
-      const response = await fetch(`${API_URL}vote/add`, {
-        method: "POST",
-        headers,
-        body: JSON.stringify({
-          comicSlug: slug,
-          rating: rating,
-        }),
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error("API Error:", response.status, errorText);
-        throw new Error(`Failed to submit vote: ${errorText}`);
-      }
-
-      const result = await response.json();
-      console.log("Vote submitted:", result);
-
-      setManga((prev) => ({
-        ...prev,
-        rating: result.averageRating,
-        totalViews: result.totalVotes,
-      }));
-    } catch (error) {
-      console.error("Error submitting vote:", error);
-      alert("Không thể gửi đánh giá. Vui lòng thử lại!");
-      throw error;
-    }
-  };
-
   const displayedChapters = filteredAndSortedChapters.slice(0, visibleChapters);
   const hasMoreChapters = visibleChapters < filteredAndSortedChapters.length;
-  const remainingChapters = filteredAndSortedChapters.length - visibleChapters;
 
   return (
     <div className="container py-8">
@@ -361,33 +335,34 @@ export function MangaDetailClient({
                   priority
                 />
               </div>
-              <Button
-                variant={manga.isBookmarks ? "default" : "outline"}
-                className={`w-full mt-3 ${
-                  manga.isBookmarks ? "bg-green-600 hover:bg-green-700" : ""
-                }`}
-                onClick={handleBookmark}
-              >
-                <Bookmark
-                  className="mr-2 h-4 w-4"
-                  fill={manga.isBookmarks ? "currentColor" : "none"}
-                />
-                {manga.isBookmarks ? "Đã đánh dấu" : "Đánh dấu"}
-              </Button>
-
-              <Button
-                variant={manga.isLiked ? "default" : "outline"}
-                className={`w-full ${
-                  manga.isLiked ? "bg-red-600 hover:bg-red-700" : ""
-                }`}
-                onClick={handleLike}
-              >
-                <Heart
-                  className="mr-2 h-4 w-4"
-                  fill={manga.isLiked ? "currentColor" : "none"}
-                />
-                {manga.isLiked ? "Đã thích" : "Thích"}
-              </Button>
+              <div className="space-y-2 mt-3">
+                <Button
+                  variant={manga.isBookmarks ? "default" : "outline"}
+                  className={`w-full ${
+                    manga.isBookmarks ? "bg-green-600 hover:bg-green-700" : ""
+                  }`}
+                  onClick={handleBookmark}
+                >
+                  <Bookmark
+                    className="mr-2 h-4 w-4"
+                    fill={manga.isBookmarks ? "currentColor" : "none"}
+                  />
+                  {manga.isBookmarks ? "Đã đánh dấu" : "Đánh dấu"}
+                </Button>
+                <Button
+                  variant={manga.isLiked ? "default" : "outline"}
+                  className={`w-full ${
+                    manga.isLiked ? "bg-red-600 hover:bg-red-700" : ""
+                  }`}
+                  onClick={handleLike}
+                >
+                  <Heart
+                    className="mr-2 h-4 w-4"
+                    fill={manga.isLiked ? "currentColor" : "none"}
+                  />
+                  {manga.isLiked ? "Đã thích" : "Thích"}
+                </Button>
+              </div>
             </div>
 
             <div className="flex-1 min-w-0">
@@ -434,7 +409,7 @@ export function MangaDetailClient({
                 </div>
                 <div className="flex items-center gap-2 text-sm">
                   <Heart className="h-4 w-4 text-muted-foreground" />
-                  <span>{formatNumber(manga.totalLikes || 0)} lượt thích</span>
+                  <span>{formatNumber(manga.totalLikes)} lượt thích</span>
                 </div>
               </div>
 
@@ -479,8 +454,8 @@ export function MangaDetailClient({
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
-                    type="text"
-                    placeholder="Tìm kiếm chapter..."
+                    type="number"
+                    placeholder="Nhập số chương..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="pl-9"
@@ -559,30 +534,25 @@ export function MangaDetailClient({
                   ))}
                 </div>
               )}
+              {hasMoreChapters && (
+                <div ref={loadMoreRef} className="p-4 flex justify-center">
+                  {isLoadingMore ? (
+                    <Loader2 className="h-6 w-6 animate-spin" />
+                  ) : (
+                    <span className="text-sm text-muted-foreground">
+                      Kéo xuống để tải thêm
+                    </span>
+                  )}
+                </div>
+              )}
             </div>
-
-            {hasMoreChapters && (
-              <div
-                ref={loadMoreRef}
-                className="p-4 flex justify-center border-t"
-              >
-                {isLoadingMore ? (
-                  <Loader2 className="h-6 w-6 animate-spin" />
-                ) : (
-                  <Button
-                    variant="ghost"
-                    onClick={handleLoadMore}
-                    className="w-full"
-                  >
-                    Xem thêm {remainingChapters} chapter
-                    <ChevronDown className="ml-2 h-4 w-4" />
-                  </Button>
-                )}
-              </div>
-            )}
           </div>
         </div>
       </div>
     </div>
   );
+}
+
+function handleRate(rating: number): Promise<void> {
+  throw new Error("Function not implemented.");
 }
